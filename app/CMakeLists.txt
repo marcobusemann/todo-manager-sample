@@ -3,6 +3,8 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+include_directories(src)
+
 set(header
     src/views/mainwindow.h
     src/data/todo.h
