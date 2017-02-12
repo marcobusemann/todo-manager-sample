@@ -1,4 +1,3 @@
-#include <views/mainwindow.h>
 #include <QApplication>
 #include <QFile>
 #include <QFileInfo>
@@ -9,6 +8,8 @@
 
 #include <dal/sqlitebooleanconverter.h>
 #include <dal/sqlitedatetimeconverter.h>
+
+#include <views/mainwindow.h>
 
 #include <data/todo.h>
 
