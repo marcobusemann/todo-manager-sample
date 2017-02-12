@@ -1,3 +1,0 @@
-[submodule "ext/QMetaOrm"]
-	path = ext/QMetaOrm
-	url = https://github.com/marcobusemann/QMetaOrm.git
