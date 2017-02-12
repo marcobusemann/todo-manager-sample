@@ -1,0 +1,3 @@
+[submodule "app/ext/QMetaOrm"]
+	path = app/ext/QMetaOrm
+	url = https://github.com/marcobusemann/QMetaOrm.git
