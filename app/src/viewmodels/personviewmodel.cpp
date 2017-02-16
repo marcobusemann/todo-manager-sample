@@ -9,40 +9,18 @@ PersonViewModel::PersonViewModel(QObject *parent)
 
 void PersonViewModel::setPerson(const Person::Ptr &person)
 {
-    m_person->setId(person->getId());
-    setName(person->getName());
-    setSurname(person->getSurname());
+    m_person->copy(person);
 }
 
 Person::Ptr PersonViewModel::buildPerson() const
 {
     Person::Ptr result(new Person());
-    result->setId(m_person->getId());
-    result->setName(m_person->getName());
-    result->setSurname(m_person->getSurname());
+    result->copy(m_person);
     return result;
 }
 
-void PersonViewModel::setName(const QString &name)
+Person::Ptr PersonViewModel::getModel() const
 {
-    if (m_person->getName() == name) return;
-    m_person->setName(name);
-    emit nameChanged(m_person->getName());
+    return m_person;
 }
 
-void PersonViewModel::setSurname(const QString &surname)
-{
-    if (m_person->getSurname() == surname) return;
-    m_person->setSurname(surname);
-    emit surnameChanged(m_person->getSurname());
-}
-
-const QString &PersonViewModel::getName() const
-{
-    return m_person->getName();
-}
-
-const QString &PersonViewModel::getSurname() const
-{
-    return m_person->getSurname();
-}

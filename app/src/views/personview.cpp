@@ -2,6 +2,7 @@
 #include "ui_personview.h"
 
 #include <viewmodels/personviewmodel.h>
+#include <mvvm/lineeditbinding.h>
 
 PersonView::PersonView(PersonViewModel *personViewModel, QWidget *parent) :
     QWidget(parent),
@@ -10,26 +11,11 @@ PersonView::PersonView(PersonViewModel *personViewModel, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->editName, &QLineEdit::textChanged, m_viewModel, &PersonViewModel::setName);
-    connect(m_viewModel, &PersonViewModel::nameChanged, this, &PersonView::updateName);
-
-    connect(ui->editSurname, &QLineEdit::textChanged, m_viewModel, &PersonViewModel::setSurname);
-    connect(m_viewModel, &PersonViewModel::surnameChanged, this, &PersonView::updateSurname);
+    LineEditBinding::factory(ui->editName, m_viewModel->getModel(), "name");
+    LineEditBinding::factory(ui->editSurname, m_viewModel->getModel(), "surname");
 }
 
 PersonView::~PersonView()
 {
     delete ui;
-}
-
-void PersonView::updateName(const QString &name)
-{
-    if (ui->editName->text() == name) return;
-    ui->editName->setText(name);
-}
-
-void PersonView::updateSurname(const QString &surname)
-{
-    if (ui->editSurname->text() == surname) return;
-    ui->editSurname->setText(surname);
 }

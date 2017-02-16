@@ -26,7 +26,8 @@ set(header
     src/viewmodels/personviewmodel.h
     src/itemmodels/personlistmodel.h
     src/dal/todoworkerrepository.h
-    src/dal/todoworkers.h)
+    src/dal/todoworkers.h
+    src/mvvm/lineeditbinding.h)
 
 set(src
     src/main.cpp
@@ -50,7 +51,8 @@ set(src
     src/viewmodels/personviewmodel.cpp
     src/itemmodels/personlistmodel.cpp
     src/dal/todoworkerrepository.cpp
-    src/dal/todoworkers.cpp)
+    src/dal/todoworkers.cpp
+    src/mvvm/lineeditbinding.cpp)
 
 # Bind to qt
 find_package(Qt5Core)
