@@ -1,6 +1,5 @@
 # Introduction
-A sample todo manager to show several design and implementation details.
-It will be further enhanced to show different designs.
+A sample todo manager using Qt 5 and QMetaOrm. This basic example will be enhanced in the future to show several common implementation styles and frameworks.
 
 # Getting started
 ```
