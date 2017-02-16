@@ -28,7 +28,6 @@ public:
             db.setDatabaseName(FILE);
 
             QFileInfo file(FILE);
-            qDebug() << file.absoluteFilePath();
 
             //if (QFile::exists(FILE))
             //    QFile::remove(FILE);
