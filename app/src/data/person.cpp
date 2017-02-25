@@ -26,9 +26,9 @@ void Person::copy(const QSharedPointer<Person> &rhs)
 
 void Person::copy(const Person &rhs)
 {
-    m_id = rhs.m_id;
-    m_name = rhs.m_name;
-    m_surname = rhs.m_surname;
+    setId(rhs.m_id);
+    setName(rhs.m_name);
+    setSurname(rhs.m_surname);
 }
 
 void Person::setId(int id)

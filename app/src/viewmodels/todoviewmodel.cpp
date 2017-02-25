@@ -10,6 +10,7 @@ TodoViewModel::TodoViewModel(const PersonRepository::Ptr &personRepository, QObj
     , m_workersItemModel(new PersonListModel(this))
 {
     connect(m_addWorkerAction, &QAction::triggered, this, &TodoViewModel::addNewWorkerByAction);
+    connect(m_todo.data(), &Todo::workersChanged, this, &TodoViewModel::updateAvailableWorkers);
 }
 
 void TodoViewModel::retranslateUi()
@@ -21,37 +22,26 @@ void TodoViewModel::retranslateUi()
 void TodoViewModel::initialize()
 {
     auto persons = m_personRepository->getAll();
+    int tmp = persons.size();
     setAvailableOwners(persons);
     setAvailableWorkers(filterPersons(persons, m_todo->getWorkers()));
 }
 
 void TodoViewModel::setTodo(const Todo::Ptr &todo)
 {
-    m_todo->setId(todo->getId());
-    setTitle(todo->getTitle());
-    setDescription(todo->getDescription());
-    setEndDate(todo->getEndDate());
-    setCompleted(todo->isCompleted());
-    setOwner(todo->getOwner());
-    setWorkers(todo->getWorkers());
+    m_todo->copy(todo);
 }
 
 Todo::Ptr TodoViewModel::buildTodo() const
 {
     Todo::Ptr result(new Todo());
-    result->setId(m_todo->getId());
-    result->setTitle(m_todo->getTitle());
-    result->setDescription(m_todo->getDescription());
-    result->setEndDate(m_todo->getEndDate());
-    result->setCompleted(m_todo->isCompleted());
-    result->setOwner(m_todo->getOwner());
-    result->setWorkers(m_todo->getWorkers());
+    result->copy(m_todo);
     return result;
 }
 
-const Person::Ptr &TodoViewModel::getOwner() const
+Todo::Ptr TodoViewModel::getModel() const
 {
-    return m_todo->getOwner();
+    return m_todo;
 }
 
 const QList<Person::Ptr> &TodoViewModel::getAvailableOwners() const
@@ -64,52 +54,11 @@ QAction *TodoViewModel::getAddWorkerAction() const
     return m_addWorkerAction;
 }
 
-void TodoViewModel::setTitle(const QString &title)
+void TodoViewModel::updateAvailableWorkers()
 {
-    if (m_todo->getTitle() == title) return;
-    m_todo->setTitle(title);
-    emit titleChanged(title);
-}
-
-void TodoViewModel::setDescription(const QString &description)
-{
-    if (m_todo->getDescription() == description) return;
-    m_todo->setDescription(description);
-    emit descriptionChanged(description);
-}
-
-void TodoViewModel::setEndDate(const QDateTime &endDate)
-{
-    if (m_todo->getEndDate() == endDate) return;
-    m_todo->setEndDate(endDate);
-    emit endDateChanged(endDate);
-}
-
-void TodoViewModel::setCompleted(bool isCompleted)
-{
-    if (m_todo->isCompleted() == isCompleted) return;
-    m_todo->setCompleted(isCompleted);
-    emit completionChanged(isCompleted);
-}
-
-void TodoViewModel::setOwner(const Person::Ptr &owner)
-{
-    auto currentOwner = m_todo->getOwner();
-    if (currentOwner == nullptr && owner == nullptr) return;
-    if ((currentOwner == nullptr && owner != nullptr) ||
-        (currentOwner != nullptr && owner == nullptr) ||
-        (currentOwner->getId() != owner->getId())) {
-        m_todo->setOwner(owner);
-        emit ownerChanged(owner);
-    }
-}
-
-void TodoViewModel::setWorkers(const QList<Person::Ptr> &workers)
-{
+    auto workers = m_todo->getWorkers();
     m_workersItemModel->setItems(workers);
-    m_todo->setWorkers(workers);
     setAvailableWorkers(filterPersons(m_allPersons, workers));
-    emit workersChanged(workers);
 }
 
 void TodoViewModel::setNewWorker(const Person::Ptr &newWorker)

@@ -1,6 +1,7 @@
 #include "todoview.h"
 #include "viewmodels/todoviewmodel.h"
 #include "ui_todoview.h"
+#include "mvvm/lineeditbinding.h"
 
 TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
     : QWidget(parent)
@@ -10,25 +11,24 @@ TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->editTitle, &QLineEdit::textChanged, m_viewModel, &TodoViewModel::setTitle);
-    connect(m_viewModel, &TodoViewModel::titleChanged, ui->editTitle, &QLineEdit::setText);
+    LineEditBinding::factory(ui->editTitle, m_viewModel->getModel(), "title");
 
     connect(ui->editDescription, &QPlainTextEdit::textChanged, this, &TodoView::updateViewModelDescription);
-    connect(m_viewModel, &TodoViewModel::descriptionChanged, this, &TodoView::updateViewDescription);
+    connect(m_viewModel->getModel().data(), &Todo::descriptionChanged, this, &TodoView::updateViewDescription);
 
-    connect(ui->editEndDate, &QDateTimeEdit::dateTimeChanged, m_viewModel, &TodoViewModel::setEndDate);
-    connect(m_viewModel, &TodoViewModel::endDateChanged, ui->editEndDate, &QDateTimeEdit::setDateTime);
+    connect(ui->editEndDate, &QDateTimeEdit::dateTimeChanged, m_viewModel->getModel().data(), &Todo::setEndDate);
+    connect(m_viewModel->getModel().data(), &Todo::endDateChanged, ui->editEndDate, &QDateTimeEdit::setDateTime);
 
-    connect(ui->editCompleted, &QCheckBox::toggled, m_viewModel, &TodoViewModel::setCompleted);
-    connect(m_viewModel, &TodoViewModel::completionChanged, ui->editCompleted, &QCheckBox::setChecked);
+    connect(ui->editCompleted, &QCheckBox::toggled, m_viewModel->getModel().data(), &Todo::setCompleted);
+    connect(m_viewModel->getModel().data(), &Todo::completionChanged, ui->editCompleted, &QCheckBox::setChecked);
 
     connect(ui->editOwner, SIGNAL(currentIndexChanged(int)), this, SLOT(updateViewModelOwner()));
-    connect(m_viewModel, &TodoViewModel::ownerChanged, this, &TodoView::updateOwner);
+    connect(m_viewModel->getModel().data(), &Todo::ownerChanged, this, &TodoView::updateOwner);
     connect(m_viewModel, &TodoViewModel::availableOwnersChanged, this, &TodoView::updateAvailableOwners);
 
     connect(m_viewModel, &TodoViewModel::availableWorkersChanged, this, &TodoView::updateAvailableWorkers);
     connect(ui->editNewWorker, SIGNAL(currentIndexChanged(int)), this, SLOT(updateViewModelNewWorker()));
-    connect(m_viewModel, &TodoViewModel::workersChanged, this, &TodoView::setWorkers);
+    connect(m_viewModel->getModel().data(), &Todo::workersChanged, this, &TodoView::setWorkers);
     connect(m_viewModel, &TodoViewModel::workerAdded, this, &TodoView::addWorker);
 
     ui->buttonAddWorker->setDefaultAction(m_viewModel->getAddWorkerAction());
@@ -43,13 +43,14 @@ void TodoView::showEvent(QShowEvent *)
 {
     if (m_firstShow) {
         m_viewModel->initialize();
+        m_viewModel->retranslateUi();
         m_firstShow = false;
     }
 }
 
 void TodoView::updateViewModelDescription()
 {
-    m_viewModel->setDescription(ui->editDescription->toPlainText());
+    m_viewModel->getModel()->setDescription(ui->editDescription->toPlainText());
 }
 
 void TodoView::updateViewModelNewWorker()
@@ -67,7 +68,7 @@ void TodoView::updateAvailableOwners(const QList<Person::Ptr> &persons)
 {
     ui->editOwner->clear();
 
-    auto currentOwner = m_viewModel->getOwner();
+    auto currentOwner = m_viewModel->getModel()->getOwner();
 
     int currentOwnerIndex = 0;
     for (int i = 0; i < persons.size(); i++) {
@@ -109,7 +110,7 @@ void TodoView::updateOwner(const Person::Ptr &person)
 void TodoView::updateViewModelOwner()
 {
     auto person = ui->editOwner->currentData().value<Person::Ptr>();
-    m_viewModel->setOwner(person);
+    m_viewModel->getModel()->setOwner(person);
 }
 
 void TodoView::addWorker(const Person::Ptr &person)

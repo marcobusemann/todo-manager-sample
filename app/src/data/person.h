@@ -2,6 +2,7 @@
 
 #include <QSharedPointer>
 #include <QObject>
+#include <QList>
 
 class Person : public QObject
 {
@@ -46,3 +47,4 @@ signals:
 };
 
 Q_DECLARE_METATYPE(Person::Ptr)
+Q_DECLARE_METATYPE(QList<Person::Ptr>)
