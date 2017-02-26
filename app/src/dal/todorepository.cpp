@@ -1,5 +1,6 @@
 #include "todorepository.h"
 #include "todoworkerrepository.h"
+#include "todomapping.h"
 
 TodoRepository::Ptr TodoRepository::factory(const QMetaOrm::SessionFactory::Ptr &sessionFactory)
 {

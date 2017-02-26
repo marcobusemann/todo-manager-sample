@@ -1,4 +1,6 @@
 #include "todoworkerrepository.h"
+#include "personmapping.h"
+
 #include <QMetaOrm/MetaEntityBuilder.h>
 
 TodoWorkersRepository::Ptr TodoWorkersRepository::factory(const QMetaOrm::SessionFactory::Ptr &sessionFactory)

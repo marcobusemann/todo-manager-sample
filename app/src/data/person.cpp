@@ -17,6 +17,7 @@ Person::Person(const Person &rhs)
 Person &Person::operator=(const Person &rhs)
 {
     copy(rhs);
+    return *this;
 }
 
 void Person::copy(const QSharedPointer<Person> &rhs)

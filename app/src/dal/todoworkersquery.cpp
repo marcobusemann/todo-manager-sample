@@ -1,4 +1,5 @@
 #include "todoworkersquery.h"
+#include "personmapping.h"
 
 TodoWorkersQuery::Ptr TodoWorkersQuery::factory(const QMetaOrm::SessionFactory::Ptr &sessionFactory)
 {

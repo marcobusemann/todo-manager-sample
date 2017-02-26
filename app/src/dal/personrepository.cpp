@@ -1,4 +1,5 @@
 #include "personrepository.h"
+#include "personmapping.h"
 
 PersonRepository::Ptr PersonRepository::factory(const QMetaOrm::SessionFactory::Ptr &sessionFactory)
 {

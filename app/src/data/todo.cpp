@@ -1,4 +1,5 @@
 #include "todo.h"
+#include <functional>
 
 template <typename T>
 void SetProperty(const T &b, T &a, std::function<void()> changeCallback) {
