@@ -7,7 +7,6 @@ TodoViewModel::TodoViewModel(const PersonRepository::Ptr &personRepository, QObj
     , m_personRepository(personRepository)
     , m_addWorkerAction(new QAction(this))
     , m_todo(Todo::Ptr(new Todo()))
-    , m_workersItemModel(new PersonListModel(this))
 {
     connect(m_addWorkerAction, &QAction::triggered, this, &TodoViewModel::addNewWorkerByAction);
     connect(m_todo.data(), &Todo::workersChanged, this, &TodoViewModel::updateAvailableWorkers);
@@ -49,6 +48,11 @@ const QList<Person::Ptr> &TodoViewModel::getAvailableOwners() const
     return m_allPersons;
 }
 
+const QList<Person::Ptr> &TodoViewModel::getAvailableWorkers() const
+{
+    return m_availableWorkers;
+}
+
 QAction *TodoViewModel::getAddWorkerAction() const
 {
     return m_addWorkerAction;
@@ -57,15 +61,14 @@ QAction *TodoViewModel::getAddWorkerAction() const
 void TodoViewModel::updateAvailableWorkers()
 {
     auto workers = m_todo->getWorkers();
-    m_workersItemModel->setItems(workers);
+    if (m_availableWorkers == workers) return;
     setAvailableWorkers(filterPersons(m_allPersons, workers));
 }
 
-void TodoViewModel::setNewWorker(const Person::Ptr &newWorker)
+void TodoViewModel::setCurrentNewWorker(const Person::Ptr &newWorker)
 {
     if (newWorker == m_newWorker) return;
     m_newWorker = newWorker;
-    emit newWorkerChanged(newWorker);
 }
 
 QList<Person::Ptr> TodoViewModel::filterPersons(const QList<Person::Ptr> &source, const QList<Person::Ptr> &itemsToSubstract)
@@ -95,7 +98,7 @@ void TodoViewModel::setAvailableWorkers(const QList<Person::Ptr> &workers)
 
 void TodoViewModel::setAvailableOwners(const QList<Person::Ptr> &owners)
 {
-    if (owners == m_allPersons) return;
+    if (m_allPersons == owners) return;
     m_allPersons = owners;
     emit availableOwnersChanged(owners);
 }
@@ -108,9 +111,9 @@ void TodoViewModel::addNewWorkerByAction()
 
 void TodoViewModel::addNewWorker(const Person::Ptr &newPerson)
 {
+    if (newPerson == nullptr) return;
     auto workers = m_todo->getWorkers();
     workers.append(newPerson);
     m_todo->setWorkers(workers);
-    emit workerAdded(newPerson);
     setAvailableWorkers(filterPersons(m_allPersons, workers));
 }

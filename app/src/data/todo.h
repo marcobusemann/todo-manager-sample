@@ -17,6 +17,7 @@ class Todo : public QObject
     Q_PROPERTY(QDateTime endDate READ getEndDate WRITE setEndDate NOTIFY endDateChanged)
     Q_PROPERTY(bool completed READ isCompleted WRITE setCompleted NOTIFY completionChanged)
     Q_PROPERTY(Person::Ptr owner READ getOwner WRITE setOwner NOTIFY ownerChanged)
+    Q_PROPERTY(QList<Person::Ptr> workers READ getWorkers WRITE setWorkers NOTIFY workersChanged)
 
 public:
     typedef QSharedPointer<Todo> Ptr;

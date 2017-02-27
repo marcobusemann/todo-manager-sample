@@ -27,9 +27,8 @@ TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
     connect(m_viewModel, &TodoViewModel::availableOwnersChanged, this, &TodoView::updateAvailableOwners);
 
     connect(m_viewModel, &TodoViewModel::availableWorkersChanged, this, &TodoView::updateAvailableWorkers);
-    connect(ui->editNewWorker, SIGNAL(currentIndexChanged(int)), this, SLOT(updateViewModelNewWorker()));
+    connect(ui->editNewWorker, SIGNAL(currentIndexChanged(int)), this, SLOT(updateViewModelCurrentNewWorker()));
     connect(m_viewModel->getModel().data(), &Todo::workersChanged, this, &TodoView::setWorkers);
-    connect(m_viewModel, &TodoViewModel::workerAdded, this, &TodoView::addWorker);
 
     ui->buttonAddWorker->setDefaultAction(m_viewModel->getAddWorkerAction());
 }
@@ -53,11 +52,6 @@ void TodoView::updateViewModelDescription()
     m_viewModel->getModel()->setDescription(ui->editDescription->toPlainText());
 }
 
-void TodoView::updateViewModelNewWorker()
-{
-    m_viewModel->setNewWorker(ui->editNewWorker->currentData().value<Person::Ptr>());
-}
-
 void TodoView::updateViewDescription(const QString &description)
 {
     if (ui->editDescription->toPlainText() != description)
@@ -71,24 +65,33 @@ void TodoView::updateAvailableOwners(const QList<Person::Ptr> &persons)
     auto currentOwner = m_viewModel->getModel()->getOwner();
 
     int currentOwnerIndex = 0;
+    ui->editNewWorker->blockSignals(true);
     for (int i = 0; i < persons.size(); i++) {
         auto person = persons[i];
         if (currentOwner != nullptr && person->getId() == currentOwner->getId())
             currentOwnerIndex = i;
         ui->editOwner->addItem(person->getFullName(), QVariant::fromValue(person));
     }
-
+    ui->editNewWorker->blockSignals(false);
     ui->editOwner->setCurrentIndex(currentOwnerIndex);
 }
 
 void TodoView::updateAvailableWorkers(const QList<Person::Ptr> &persons)
 {
     ui->editNewWorker->clear();
-
+    ui->editNewWorker->blockSignals(true);
     for (int i = 0; i < persons.size(); i++) {
         auto person = persons[i];
         ui->editNewWorker->addItem(person->getFullName(), QVariant::fromValue(person));
     }
+    ui->editNewWorker->blockSignals(false);
+    ui->editNewWorker->setCurrentIndex(0);
+    updateViewModelCurrentNewWorker();
+}
+
+void TodoView::updateViewModelCurrentNewWorker()
+{
+    m_viewModel->setCurrentNewWorker(ui->editNewWorker->currentData().value<Person::Ptr>());
 }
 
 void TodoView::updateOwner(const Person::Ptr &person)
@@ -102,9 +105,11 @@ void TodoView::updateOwner(const Person::Ptr &person)
     });
 
     if (foundIt != availableOwners.end()) {
-        auto index = std::distance(availableOwners.begin(), foundIt);
-        ui->editOwner->setCurrentIndex(index);
+       auto index = std::distance(availableOwners.begin(), foundIt);
+       ui->editOwner->setCurrentIndex(index);
     }
+    else
+       ui->editOwner->setCurrentIndex(0);
 }
 
 void TodoView::updateViewModelOwner()
@@ -113,17 +118,12 @@ void TodoView::updateViewModelOwner()
     m_viewModel->getModel()->setOwner(person);
 }
 
-void TodoView::addWorker(const Person::Ptr &person)
-{
-    auto *item = new QListWidgetItem(person->getFullName());
-    item->setData(Qt::UserRole, QVariant::fromValue(person));
-    ui->editWorkers->addItem(item);
-}
-
 void TodoView::setWorkers(const QList<Person::Ptr> &persons)
 {
     ui->editWorkers->clear();
     for (auto person : persons) {
-        addWorker(person);
+        auto *item = new QListWidgetItem(person->getFullName());
+        item->setData(Qt::UserRole, QVariant::fromValue(person));
+        ui->editWorkers->addItem(item);
     }
 }

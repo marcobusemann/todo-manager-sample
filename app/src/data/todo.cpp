@@ -10,6 +10,7 @@ void SetProperty(const T &b, T &a, std::function<void()> changeCallback) {
 
 Todo::Todo()
     : m_id(0)
+    , m_isCompleted(false)
     , m_endDate(QDateTime::currentDateTime())
 {}
 

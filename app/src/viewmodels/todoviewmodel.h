@@ -23,15 +23,15 @@ public:
 
     void setTodo(const Todo::Ptr &todo);
     Todo::Ptr buildTodo() const;
-
     Todo::Ptr getModel() const;
 
     const QList<Person::Ptr> &getAvailableOwners() const;
+    const QList<Person::Ptr> &getAvailableWorkers() const;
 
     QAction *getAddWorkerAction() const;
 
 public slots:
-    void setNewWorker(const Person::Ptr &newWorker);
+    void setCurrentNewWorker(const Person::Ptr &newWorker);
 
 private:
     PersonRepository::Ptr m_personRepository;
@@ -39,7 +39,6 @@ private:
     QAction *m_addWorkerAction;
 
     Todo::Ptr m_todo;
-    PersonListModel  *m_workersItemModel;
 
     QList<Person::Ptr> m_allPersons;
     QList<Person::Ptr> m_availableWorkers;
@@ -56,10 +55,6 @@ private slots:
     void updateAvailableWorkers();
 
 signals:
-    void newWorkerChanged(const Person::Ptr &newWorker);
-
     void availableOwnersChanged(const QList<Person::Ptr> &workers);
     void availableWorkersChanged(const QList<Person::Ptr> &workers);
-
-    void workerAdded(const Person::Ptr &person);
 };
