@@ -28,8 +28,6 @@ private:
     bool m_firstShow;
 
 private slots:
-    void updateViewModelDescription();
-    void updateViewDescription(const QString &description);
     void updateAvailableOwners(const QList<Person::Ptr> &persons);
     void updateAvailableWorkers(const QList<Person::Ptr> &persons);
     void updateViewModelCurrentNewWorker();

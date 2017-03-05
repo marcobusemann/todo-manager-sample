@@ -64,7 +64,9 @@ source_group("itemmodels" FILES ${source-itemmodels})
 
 set(source-mvvm
     src/mvvm/lineeditbinding.h
-    src/mvvm/lineeditbinding.cpp)
+    src/mvvm/lineeditbinding.cpp
+    src/mvvm/plaintexteditbinding.h
+    src/mvvm/plaintexteditbinding.cpp)
 source_group("mvvm" FILES ${source-mvvm})
 
 set(src 

@@ -2,6 +2,7 @@
 #include "viewmodels/todoviewmodel.h"
 #include "ui_todoview.h"
 #include "mvvm/lineeditbinding.h"
+#include "mvvm/plaintexteditbinding.h"
 
 TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
     : QWidget(parent)
@@ -12,9 +13,7 @@ TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
     ui->setupUi(this);
 
     LineEditBinding::factory(ui->editTitle, m_viewModel->getModel(), "title");
-
-    connect(ui->editDescription, &QPlainTextEdit::textChanged, this, &TodoView::updateViewModelDescription);
-    connect(m_viewModel->getModel().data(), &Todo::descriptionChanged, this, &TodoView::updateViewDescription);
+    PlainTextEditBinding::factory(ui->editDescription, m_viewModel->getModel(), "description");
 
     connect(ui->editEndDate, &QDateTimeEdit::dateTimeChanged, m_viewModel->getModel().data(), &Todo::setEndDate);
     connect(m_viewModel->getModel().data(), &Todo::endDateChanged, ui->editEndDate, &QDateTimeEdit::setDateTime);
@@ -45,17 +44,6 @@ void TodoView::showEvent(QShowEvent *)
         m_viewModel->retranslateUi();
         m_firstShow = false;
     }
-}
-
-void TodoView::updateViewModelDescription()
-{
-    m_viewModel->getModel()->setDescription(ui->editDescription->toPlainText());
-}
-
-void TodoView::updateViewDescription(const QString &description)
-{
-    if (ui->editDescription->toPlainText() != description)
-        ui->editDescription->setPlainText(description);
 }
 
 void TodoView::updateAvailableOwners(const QList<Person::Ptr> &persons)
