@@ -1,8 +1,11 @@
 #include "todoview.h"
 #include "viewmodels/todoviewmodel.h"
 #include "ui_todoview.h"
+
 #include "mvvm/lineeditbinding.h"
 #include "mvvm/plaintexteditbinding.h"
+#include "mvvm/checkboxbinding.h"
+#include "mvvm/datetimeeditbinding.h"
 
 TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
     : QWidget(parent)
@@ -14,12 +17,8 @@ TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
 
     LineEditBinding::factory(ui->editTitle, m_viewModel->getModel(), "title");
     PlainTextEditBinding::factory(ui->editDescription, m_viewModel->getModel(), "description");
-
-    connect(ui->editEndDate, &QDateTimeEdit::dateTimeChanged, m_viewModel->getModel().data(), &Todo::setEndDate);
-    connect(m_viewModel->getModel().data(), &Todo::endDateChanged, ui->editEndDate, &QDateTimeEdit::setDateTime);
-
-    connect(ui->editCompleted, &QCheckBox::toggled, m_viewModel->getModel().data(), &Todo::setCompleted);
-    connect(m_viewModel->getModel().data(), &Todo::completionChanged, ui->editCompleted, &QCheckBox::setChecked);
+    CheckBoxBinding::factory(ui->editCompleted, m_viewModel->getModel(), "completed");
+    DateTimeEditBinding::factory(ui->editEndDate, m_viewModel->getModel(), "endDate");
 
     connect(ui->editOwner, SIGNAL(currentIndexChanged(int)), this, SLOT(updateViewModelOwner()));
     connect(m_viewModel->getModel().data(), &Todo::ownerChanged, this, &TodoView::updateOwner);

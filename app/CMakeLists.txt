@@ -66,7 +66,11 @@ set(source-mvvm
     src/mvvm/lineeditbinding.h
     src/mvvm/lineeditbinding.cpp
     src/mvvm/plaintexteditbinding.h
-    src/mvvm/plaintexteditbinding.cpp)
+    src/mvvm/plaintexteditbinding.cpp
+    src/mvvm/checkboxbinding.h
+    src/mvvm/checkboxbinding.cpp
+    src/mvvm/datetimeeditbinding.h
+    src/mvvm/datetimeeditbinding.cpp)
 source_group("mvvm" FILES ${source-mvvm})
 
 set(src 
