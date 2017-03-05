@@ -42,7 +42,7 @@ void LineEditBinding::initialize() {
 
 void LineEditBinding::bindModel() {
     auto itemPropertyIndex = m_item->metaObject()->indexOfProperty(m_propertyName.toLocal8Bit());
-    Q_ASSERT_X(itemPropertyIndex >= 0, __FUNCTION__, "property not found");
+    Q_ASSERT_X(itemPropertyIndex >= 0, __FUNCTION__, QString("property %1 does not exist").arg(m_propertyName).toLocal8Bit());
 
     auto itemProperty = m_item->metaObject()->property(itemPropertyIndex);
 
