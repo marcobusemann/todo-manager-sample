@@ -71,7 +71,7 @@
      <item row="2" column="1">
       <widget class="QComboBox" name="editOwner">
        <property name="editable">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -94,8 +94,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>682</width>
-        <height>594</height>
+        <width>688</width>
+        <height>635</height>
        </rect>
       </property>
       <attribute name="label">
@@ -112,8 +112,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>682</width>
-        <height>594</height>
+        <width>688</width>
+        <height>635</height>
        </rect>
       </property>
       <attribute name="label">
@@ -125,7 +125,7 @@
          <item>
           <widget class="QComboBox" name="editNewWorker">
            <property name="editable">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -139,7 +139,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="editWorkers"/>
+        <widget class="QListView" name="editWorkers"/>
        </item>
       </layout>
      </widget>

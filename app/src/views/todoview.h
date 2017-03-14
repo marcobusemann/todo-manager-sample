@@ -26,12 +26,4 @@ private:
     Ui::TodoView *ui;
 
     bool m_firstShow;
-
-private slots:
-    void updateAvailableOwners(const QList<Person::Ptr> &persons);
-    void updateAvailableWorkers(const QList<Person::Ptr> &persons);
-    void updateViewModelCurrentNewWorker();
-    void updateOwner(const Person::Ptr &person);
-    void updateViewModelOwner();
-    void setWorkers(const QList<Person::Ptr> &persons);
 };

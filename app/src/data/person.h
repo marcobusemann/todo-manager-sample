@@ -19,6 +19,7 @@ public:
     Person();
     Person(const Person &rhs);
     Person &operator=(const Person &rhs);
+    bool operator==(const Person &rhs);
 
     void setId(int id);
     int getId() const;

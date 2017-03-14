@@ -20,6 +20,11 @@ Person &Person::operator=(const Person &rhs)
     return *this;
 }
 
+bool Person::operator==(const Person &rhs)
+{
+    return m_id == rhs.m_id;
+}
+
 void Person::copy(const QSharedPointer<Person> &rhs)
 {
     copy(*rhs);

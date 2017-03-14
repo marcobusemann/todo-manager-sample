@@ -70,8 +70,43 @@ set(source-mvvm
     src/mvvm/checkboxbinding.h
     src/mvvm/checkboxbinding.cpp
     src/mvvm/datetimeeditbinding.h
-    src/mvvm/datetimeeditbinding.cpp)
+    src/mvvm/datetimeeditbinding.cpp
+	src/mvvm/comboboxbinding.h
+	src/mvvm/comboboxbinding.cpp)
 source_group("mvvm" FILES ${source-mvvm})
+
+set(source-moderngrids
+    src/moderngrids/iobservablevariantlist.h
+    src/moderngrids/modelbuilder.h
+    src/moderngrids/modelbuilder.cpp
+    src/moderngrids/modellogger.h
+    src/moderngrids/modellogger.cpp
+    src/moderngrids/observablelist.h
+    src/moderngrids/observableset.h
+    src/moderngrids/observablevariantlistmodel.cpp
+    src/moderngrids/observablevariantlistmodel.h
+    src/moderngrids/observablevariantlistproxy.h
+    src/moderngrids/viewbuilder.cpp
+    src/moderngrids/viewbuilder.h
+    src/moderngrids/managers/checkboxmultimarkviewmanager.h
+    src/moderngrids/managers/checkboxmultimarkviewmanager.cpp
+    src/moderngrids/managers/selectionmanager.h
+    src/moderngrids/managers/selectionmanager.cpp
+    src/moderngrids/decorators/objectdatamodeldecorator.h
+    src/moderngrids/decorators/objectdatamodeldecorator.cpp
+    src/moderngrids/decorators/headerdatamodeldecorator.h
+    src/moderngrids/decorators/headerdatamodeldecorator.cpp
+    src/moderngrids/decorators/fetchmoredecorator.h
+    src/moderngrids/decorators/fetchmoredecorator.cpp
+    src/moderngrids/decorators/datamodeldecorator.h
+    src/moderngrids/decorators/datamodeldecorator.cpp
+    src/moderngrids/decorators/columnmodeldecorator.h
+    src/moderngrids/decorators/columnmodeldecorator.cpp
+    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.h
+    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.cpp
+    src/moderngrids/decorators/alternaterowshadingmodeldecorator.h
+    src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp)
+source_group("moderngrids" FILES ${source-moderngrids})
 
 set(src 
     ${source-views} 
@@ -79,7 +114,8 @@ set(src
     ${source-data} 
     ${source-dal} 
     ${source-itemmodels} 
-    ${source-mvvm} 
+    ${source-mvvm}
+    ${source-moderngrids}	
     src/main.cpp)
 source_group("" FILES src/main.cpp)
 
