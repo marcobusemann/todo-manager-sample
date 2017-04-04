@@ -7,14 +7,14 @@ TodoViewModel::TodoViewModel(const PersonRepository::Ptr &personRepository, QObj
     , m_personRepository(personRepository)
     , m_addWorkerAction(new QAction(this))
     , m_todo(Todo::Ptr(new Todo()))
-    , m_allPersons(ObservableList<Person::Ptr>::empty())
-    , m_availableWorkers(ObservableList<Person::Ptr>::empty())
-    , m_workers(ObservableList<Person::Ptr>::empty())
+    , m_allPersons(QObservableList<Person::Ptr>::empty())
+    , m_availableWorkers(QObservableList<Person::Ptr>::empty())
+    , m_workers(QObservableList<Person::Ptr>::empty())
 {
     connect(m_addWorkerAction, &QAction::triggered, this, &TodoViewModel::addNewWorkerByAction);
 
-    m_workers->OnChange = [&]() {
-        m_todo->setWorkers(m_workers->toList());
+    m_workers.afterChange() += [this]() {
+        m_todo->setWorkers(m_workers.toList());
         updateAvailableWorkers();
     };
 }
@@ -28,7 +28,7 @@ void TodoViewModel::retranslateUi()
 void TodoViewModel::initialize()
 {
     auto persons = m_personRepository->getAll();
-    auto observablePersons = ObservableList<Person::Ptr>::fromList(persons);
+    auto observablePersons = QObservableList<Person::Ptr>::fromList(persons);
     setAvailableOwners(observablePersons);
     setAvailableWorkers(filterPersons(observablePersons, m_todo->getWorkers()));
 }
@@ -37,7 +37,7 @@ void TodoViewModel::setTodo(const Todo::Ptr &todo)
 {
     m_todo->copy(todo);
     if (todo != nullptr)
-        *m_workers = todo->getWorkers();
+        m_workers = todo->getWorkers();
     emit modelChanged();
 }
 
@@ -53,17 +53,17 @@ Todo::Ptr TodoViewModel::getModel() const
     return m_todo;
 }
 
-const ObservableList<Person::Ptr>::Ptr &TodoViewModel::getAvailableOwners() const
+QObservableList<Person::Ptr> &TodoViewModel::getAvailableOwners()
 {
     return m_allPersons;
 }
 
-const ObservableList<Person::Ptr>::Ptr &TodoViewModel::getAvailableWorkers() const
+QObservableList<Person::Ptr> &TodoViewModel::getAvailableWorkers()
 {
     return m_availableWorkers;
 }
 
-const ObservableList<Person::Ptr>::Ptr &TodoViewModel::getWorkers() const
+QObservableList<Person::Ptr> &TodoViewModel::getWorkers()
 {
     return m_workers;
 }
@@ -91,10 +91,10 @@ const Person::Ptr &TodoViewModel::getCurrentNewWorker() const
     return m_currentNewWorker;
 }
 
-ObservableList<Person::Ptr>::Ptr TodoViewModel::filterPersons(const ObservableList<Person::Ptr>::Ptr &source, const QList<Person::Ptr> &itemsToSubstract)
+QObservableList<Person::Ptr> TodoViewModel::filterPersons(const QObservableList<Person::Ptr> &source, const QList<Person::Ptr> &itemsToSubstract)
 {
-    auto sourceQtList = source->toList();
-    auto result = ObservableList<Person::Ptr>::fromList(source);
+    auto sourceQtList = source.toList();
+    auto result = QObservableList<Person::Ptr>::fromList(source);
 
     for (auto item : itemsToSubstract) {
         auto foundIterator = std::find_if(sourceQtList.begin(), sourceQtList.end(), [item](const Person::Ptr &value) -> bool {
@@ -103,7 +103,7 @@ ObservableList<Person::Ptr>::Ptr TodoViewModel::filterPersons(const ObservableLi
 
         if (foundIterator != sourceQtList.end()) {
             int index = std::distance(sourceQtList.begin(), foundIterator);
-            result->removeAt(index);
+            result.removeAt(index);
             sourceQtList.removeAt(index);
         }
     }
@@ -111,16 +111,16 @@ ObservableList<Person::Ptr>::Ptr TodoViewModel::filterPersons(const ObservableLi
     return result;
 }
 
-void TodoViewModel::setAvailableWorkers(const ObservableList<Person::Ptr>::Ptr &workers)
+void TodoViewModel::setAvailableWorkers(const QObservableList<Person::Ptr> &workers)
 {
     if (m_availableWorkers == workers) return;
-    *m_availableWorkers = *workers;
+    m_availableWorkers = workers;
 }
 
-void TodoViewModel::setAvailableOwners(const ObservableList<Person::Ptr>::Ptr &owners)
+void TodoViewModel::setAvailableOwners(const QObservableList<Person::Ptr> &owners)
 {
     if (m_allPersons == owners) return;
-    *m_allPersons = *owners;
+    m_allPersons = owners;
 }
 
 void TodoViewModel::addNewWorkerByAction()
@@ -132,5 +132,5 @@ void TodoViewModel::addNewWorkerByAction()
 void TodoViewModel::addNewWorker(const Person::Ptr &newPerson)
 {
     if (newPerson == nullptr) return;
-    m_workers->append(newPerson);
+    m_workers.append(newPerson);
 }

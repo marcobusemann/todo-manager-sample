@@ -1,6 +1,6 @@
 #pragma once
 
-#include "iobservablevariantlist.h"
+#include "qobservablevariantlistproxy.h"
 
 #include <QAbstractItemModel>
 #include <functional>
@@ -10,7 +10,7 @@ class ObservableVariantListModel : public QAbstractItemModel
 {
 public:
     ObservableVariantListModel(QObject *parent = nullptr);
-    void setSource(const std::shared_ptr<IObservableVariantList> &source);
+    void setSource(const QObservableVariantListProxy &source);
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     virtual QModelIndex parent(const QModelIndex &) const override;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -19,8 +19,17 @@ public:
     virtual QModelIndexList match(const QModelIndex &start, int role, const QVariant &value, int hits = 1, Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const;
 
 private:
-    void linkTo(IObservableVariantList::Ptr list);
-    void unlinkFrom(IObservableVariantList::Ptr list);
+    void linkTo(QObservableVariantListProxy &source);
+    void unlinkFrom(QObservableVariantListProxy &source);
 
-    IObservableVariantList::Ptr m_source;
+    QObservableVariantListProxy m_source;
+
+    QScopePtr m_addBeforeScope;
+    QScopePtr m_addAfterScope;
+    QScopePtr m_addBatchBeforeScope;
+    QScopePtr m_addBatchAfterScope;
+    QScopePtr m_removeBeforeScope;
+    QScopePtr m_removeAfterScope;
+    QScopePtr m_clearBeforeScope;
+    QScopePtr m_clearAfterScope;
 };

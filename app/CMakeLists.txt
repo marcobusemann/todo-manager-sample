@@ -76,16 +76,15 @@ set(source-mvvm
 source_group("mvvm" FILES ${source-mvvm})
 
 set(source-moderngrids
-    src/moderngrids/iobservablevariantlist.h
     src/moderngrids/modelbuilder.h
     src/moderngrids/modelbuilder.cpp
     src/moderngrids/modellogger.h
     src/moderngrids/modellogger.cpp
-    src/moderngrids/observablelist.h
+    src/moderngrids/qobservablelist.h
     src/moderngrids/observableset.h
     src/moderngrids/observablevariantlistmodel.cpp
     src/moderngrids/observablevariantlistmodel.h
-    src/moderngrids/observablevariantlistproxy.h
+    src/moderngrids/qobservablevariantlistproxy.h
     src/moderngrids/viewbuilder.cpp
     src/moderngrids/viewbuilder.h
     src/moderngrids/managers/checkboxmultimarkviewmanager.h
@@ -105,7 +104,8 @@ set(source-moderngrids
     src/moderngrids/decorators/checkboxmultimarkmodeldecorator.h
     src/moderngrids/decorators/checkboxmultimarkmodeldecorator.cpp
     src/moderngrids/decorators/alternaterowshadingmodeldecorator.h
-    src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp)
+    src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp
+	src/moderngrids/qeventhandler.h)
 source_group("moderngrids" FILES ${source-moderngrids})
 
 set(src 

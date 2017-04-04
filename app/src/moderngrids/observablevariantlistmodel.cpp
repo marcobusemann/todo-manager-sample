@@ -9,7 +9,7 @@ ObservableVariantListModel::ObservableVariantListModel(QObject *parent)
 {}
 
 //-----------------------------------------------------------------------------
-void ObservableVariantListModel::setSource(const std::shared_ptr<IObservableVariantList> &source)
+void ObservableVariantListModel::setSource(const QObservableVariantListProxy &source)
 {
     unlinkFrom(m_source);
     m_source = source;
@@ -34,7 +34,7 @@ QModelIndex ObservableVariantListModel::parent(const QModelIndex &index) const
 //-----------------------------------------------------------------------------
 int ObservableVariantListModel::rowCount(const QModelIndex &parent) const
 {
-    auto result = parent.isValid() ? 0 : m_source->size();
+    auto result = parent.isValid() ? 0 : m_source.size();
     ModelLogger::instance().logRowCount("ObservableVariantListModel::rowCount", parent, result);
     return result;
 }
@@ -51,7 +51,7 @@ QVariant ObservableVariantListModel::data(const QModelIndex &index, int role) co
 {
     QVariant result;
     if (index.isValid())
-        result = role == Qt::UserRole ? m_source->at(index.row()) : QVariant();
+        result = role == Qt::UserRole ? m_source.at(index.row()) : QVariant();
     ModelLogger::instance().logData("ObservableVariantListModel::data", index, role, result);
     return result;
 }
@@ -63,15 +63,15 @@ QModelIndexList ObservableVariantListModel::match(const QModelIndex &start, int 
         return QAbstractItemModel::match(start, role, value, hits, flags);
 
     if (hits == -1)
-        hits = m_source->size();
+        hits = m_source.size();
 
     QModelIndexList result;
 
-    int items = m_source->size();
+    int items = m_source.size();
     int foundIndex = -1;
     do
     {
-        foundIndex = m_source->indexOf(value, foundIndex == -1 ? start.row() : foundIndex);
+        foundIndex = m_source.indexOf(value, foundIndex == -1 ? start.row() : foundIndex);
         if (foundIndex > -1)
         {
             result.append(index(foundIndex, 0));
@@ -83,51 +83,58 @@ QModelIndexList ObservableVariantListModel::match(const QModelIndex &start, int 
 }
 
 //-----------------------------------------------------------------------------
-void ObservableVariantListModel::linkTo(IObservableVariantList::Ptr list)
+void ObservableVariantListModel::linkTo(QObservableVariantListProxy &source)
 {
-    list->setOnBeforeAdd([this](int index, const QVariant &) -> void
+    m_addBeforeScope = source.beforeAdd().attach([this](int index, const QVariant &) -> void
     {
         this->beginInsertRows(QModelIndex(), index, index);
     });
-    list->setOnBeforeAddBatch([this](int index, const QVariant &, int amount) -> void
+
+    m_addBatchBeforeScope = source.beforeAddBatch().attach([this](int index, const QVariant &, int amount) -> void
     {
         this->beginInsertRows(QModelIndex(), index, index + (amount - 1));
     });
-    list->setOnAdd([this](int, const QVariant &) -> void
-    {
-        this->endInsertRows();
-    });
-    list->setOnAddBatch([this](int, const QVariant &, int) -> void
+
+    m_addAfterScope = source.afterAdd().attach([this](int, const QVariant &) -> void
     {
         this->endInsertRows();
     });
 
-    list->setOnBeforeRemove([this](int index, const QVariant &) -> void
+    m_addBatchAfterScope = source.afterAddBatch().attach([this](int, const QVariant &, int) -> void
+    {
+        this->endInsertRows();
+    });
+
+    m_removeBeforeScope = source.beforeRemove().attach([this](int index, const QVariant &) -> void
     {
         this->beginRemoveRows(QModelIndex(), index, index);
     });
-    list->setOnRemove([this](int, const QVariant &) -> void
+
+    m_removeAfterScope = source.afterRemove().attach([this](int, const QVariant &) -> void
     {
         this->endRemoveRows();
     });
-    list->setOnBeforeClear([this]()
+
+    m_clearBeforeScope = source.beforeClear().attach([this]()
     {
         this->beginResetModel();
     });
-    list->setOnClear([this]() 
+
+    m_clearAfterScope = source.afterClear().attach([this]()
     {
         this->endResetModel();
     });
 }
 
 //-----------------------------------------------------------------------------
-void ObservableVariantListModel::unlinkFrom(IObservableVariantList::Ptr list)
+void ObservableVariantListModel::unlinkFrom(QObservableVariantListProxy &source)
 {
-    if (!list) return;
-    list->setOnBeforeAdd(nullptr);
-    list->setOnBeforeRemove(nullptr);
-    list->setOnBeforeClear(nullptr);
-    list->setOnAdd(nullptr);
-    list->setOnRemove(nullptr);
-    list->setOnClear(nullptr);
+    m_addBeforeScope = QScopePtr();
+    m_addAfterScope = QScopePtr();
+    m_addBatchBeforeScope = QScopePtr();
+    m_addBatchAfterScope = QScopePtr();
+    m_removeBeforeScope = QScopePtr();
+    m_removeAfterScope = QScopePtr();
+    m_clearBeforeScope = QScopePtr();
+    m_clearAfterScope = QScopePtr();
 }

@@ -8,11 +8,11 @@
 #include "decorators/objectdatamodeldecorator.h"
 #include "decorators/fetchmoredecorator.h"
 
-#include "observablevariantlistproxy.h"
+#include "qobservablevariantlistproxy.h"
 #include "observablevariantlistmodel.h"
 
 #include "observableset.h"
-#include "observablelist.h"
+#include "qobservablelist.h"
 
 #include <QAbstractItemModel>
 #include <QIcon>
@@ -404,7 +404,7 @@ private:
 class ModelBuilderOf final
 {
 public:
-    ModelBuilderOf(const ObservableVariantListProxy::Ptr &list, QObject *parent)
+    ModelBuilderOf(const QObservableVariantListProxy &list, QObject *parent)
         : m_parent(parent)
     {
         auto model = new ObservableVariantListModel(parent);
@@ -447,15 +447,15 @@ public:
         return ModelBuilder(parent);
     }
 
-    ModelBuilderOf of(const ObservableVariantListProxy::Ptr &list)
+    ModelBuilderOf of(const QObservableVariantListProxy &list)
     {
         return ModelBuilderOf(list, m_parent);
     }
 
     template <class T>
-    ModelBuilderOf of(const std::shared_ptr<ObservableList<T>> &list)
+    ModelBuilderOf of(QObservableList<T> &list)
     {
-        return ModelBuilderOf(ObservableVariantListProxy::from(list), m_parent);
+        return ModelBuilderOf(QObservableVariantListProxy::from(list), m_parent);
     }
 
 private:

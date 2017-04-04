@@ -5,7 +5,7 @@
 #include <data/todo.h>
 #include <data/person.h>
 
-#include <moderngrids/observablelist.h>
+#include <moderngrids/qobservablelist.h>
 
 #include <QObject>
 #include <QList>
@@ -29,9 +29,9 @@ public:
     Todo::Ptr buildTodo() const;
     Todo::Ptr getModel() const;
 
-    const ObservableList<Person::Ptr>::Ptr &getAvailableOwners() const;
-    const ObservableList<Person::Ptr>::Ptr &getAvailableWorkers() const;
-    const ObservableList<Person::Ptr>::Ptr &getWorkers() const;
+    QObservableList<Person::Ptr> &getAvailableOwners();
+    QObservableList<Person::Ptr> &getAvailableWorkers();
+    QObservableList<Person::Ptr> &getWorkers();
     const Person::Ptr &getCurrentNewWorker() const;
 
     QAction *getAddWorkerAction() const;
@@ -46,14 +46,14 @@ private:
 
     Todo::Ptr m_todo;
 
-    ObservableList<Person::Ptr>::Ptr m_allPersons;
-    ObservableList<Person::Ptr>::Ptr m_availableWorkers;
-    ObservableList<Person::Ptr>::Ptr m_workers;
+    QObservableList<Person::Ptr> m_allPersons;
+    QObservableList<Person::Ptr> m_availableWorkers;
+    QObservableList<Person::Ptr> m_workers;
     Person::Ptr m_currentNewWorker;
 
-    ObservableList<Person::Ptr>::Ptr filterPersons(const ObservableList<Person::Ptr>::Ptr &source, const QList<Person::Ptr> &itemsToSubstract);
-    void setAvailableWorkers(const ObservableList<Person::Ptr>::Ptr &workers);
-    void setAvailableOwners(const ObservableList<Person::Ptr>::Ptr &owners);
+    QObservableList<Person::Ptr> filterPersons(const QObservableList<Person::Ptr> &source, const QList<Person::Ptr> &itemsToSubstract);
+    void setAvailableWorkers(const QObservableList<Person::Ptr> &workers);
+    void setAvailableOwners(const QObservableList<Person::Ptr> &owners);
 
 private slots:
     void addNewWorker(const Person::Ptr &newPerson);
