@@ -4,7 +4,7 @@
 #include <QMetaProperty>
 
 namespace Ui {
-class PersonView;
+    class PersonView;
 }
 
 class PersonViewModel;
