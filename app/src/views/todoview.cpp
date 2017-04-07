@@ -28,16 +28,19 @@ TodoView::TodoView(TodoViewModel *viewModel, QWidget *parent)
         return index.data(Qt::UserRole).value<Person::Ptr>()->getFullName();
     };
 
-    auto ownerModel = ModelBuilder::AModel().of(m_viewModel->getAvailableOwners())
-        .withColumns(1).withData().forRole(Qt::DisplayRole).withHandler(personDisplayHandler).build();
+    auto ownerModel = ModelBuilder::AListModelFor(m_viewModel->getAvailableOwners(), this)
+        .withData(Qt::DisplayRole, personDisplayHandler)
+        .build();
     ComboBoxBinding::factory(ui->editOwner, ownerModel, m_viewModel->getModel(), "owner");
 
-    auto workerModel = ModelBuilder::AModel().of(m_viewModel->getAvailableWorkers())
-        .withColumns(1).withData().forRole(Qt::DisplayRole).withHandler(personDisplayHandler).build();
+    auto workerModel = ModelBuilder::AListModelFor(m_viewModel->getAvailableWorkers(), this)
+        .withData(Qt::DisplayRole, personDisplayHandler)
+        .build();
     ComboBoxBinding::factory(ui->editNewWorker, workerModel, m_viewModel, "currentNewWorker");
 
-    auto choosenWorkerModel = ModelBuilder::AModel().of(m_viewModel->getWorkers())
-        .withColumns(1).withData().forRole(Qt::DisplayRole).withHandler(personDisplayHandler).build();
+    auto choosenWorkerModel = ModelBuilder::AListModelFor(m_viewModel->getWorkers(), this)
+        .withData(Qt::DisplayRole, personDisplayHandler)
+        .build();
     ui->editWorkers->setModel(choosenWorkerModel);
 }
 
