@@ -442,6 +442,30 @@ private:
 class ModelBuilder final
 {
 public:
+    static ModelBuilderOf AModelFor(const QObservableVariantListProxy &list, QObject *parent = nullptr)
+    {
+        return ModelBuilderOf(list, parent);
+    }
+
+    template <class T>
+    static ModelBuilderOf AModelFor(QObservableList<T> &list, QObject *parent = nullptr)
+    {
+        return ModelBuilderOf(QObservableVariantListProxy::from(list), parent);
+    }
+
+    static ModelBuilderCommon AListModelFor(const QObservableVariantListProxy &list, QObject *parent = nullptr)
+    {
+        return ModelBuilderOf(list, parent)
+            .withColumns(1);
+    }
+
+    template <class T>
+    static ModelBuilderCommon AListModelFor(QObservableList<T> &list, QObject *parent = nullptr)
+    {
+        return ModelBuilderOf(QObservableVariantListProxy::from(list), parent)
+            .withColumns(1);
+    }
+
     static ModelBuilder AModel(QObject *parent = nullptr)
     {
         return ModelBuilder(parent);
@@ -455,7 +479,7 @@ public:
     template <class T>
     ModelBuilderOf of(QObservableList<T> &list)
     {
-        return ModelBuilderOf(QObservableVariantListProxy::from(list), m_parent);
+        return of(QObservableVariantListProxy::from(list));
     }
 
 private:
