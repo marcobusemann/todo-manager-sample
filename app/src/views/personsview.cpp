@@ -3,6 +3,12 @@
 
 #include <viewmodels/personsviewmodel.h>
 
+#include <moderngrids\modelbuilder.h>
+
+#include <mvvm/lineeditbinding.h>
+
+#include <QSortFilterProxyModel>
+
 PersonsView::PersonsView(
     const QSharedPointer<PersonsViewModel> &viewModel,
     QWidget *parent)
@@ -13,14 +19,43 @@ PersonsView::PersonsView(
 {
     m_ui->setupUi(this);
 
+    auto personsItemModel = ModelBuilder::AModelFor(m_viewModel->getPersons(), this)
+        .withColumns(2)
+        .withData(Qt::DisplayRole, [](const QModelIndex &index, int role) -> QVariant {
+            auto person = index.data(Qt::UserRole).value<Person::Ptr>();
+            QVariant result;
+            if (index.column() == 0)
+                result = person->getSurname();
+            else if (index.column() == 1)
+                result = person->getName();
+            return result;
+        })
+        .withHorizontalHeaderData([](int column, int role) -> QVariant {
+            QVariant result;
+            if (role == Qt::DisplayRole)
+            {
+                if (column == 0)
+                    result = tr("Surname");
+                else if (column == 1)
+                    result = tr("Name");
+            }
+            return result;
+        })
+        .build();
+
+    // TODO: To this using the model builder
+    m_sortFilterModel = new QSortFilterProxyModel(this);
+    m_sortFilterModel->setSourceModel(personsItemModel);
+    m_sortFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_sortFilterModel->setFilterKeyColumn(-1);
+    connect(m_ui->editSearch, &QLineEdit::textChanged, m_sortFilterModel, &QSortFilterProxyModel::setFilterWildcard);
+
+    m_ui->personsItemView->setModel(m_sortFilterModel);
+    connect(m_ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
+
+    LineEditBinding::factory(m_ui->editNewPersonName, m_viewModel, "newPersonName");
+
     connect(m_ui->personsItemView, &QTreeView::doubleClicked, m_viewModel->getActionEdit(), &QAction::trigger);
-
-    connect(m_viewModel.data(), &PersonsViewModel::itemModelChanged, this, &PersonsView::updateItemModel);
-    connect(m_ui->editNewPersonName, &QLineEdit::textChanged, m_viewModel.data(), &PersonsViewModel::setNewPersonNames);
-    connect(m_viewModel.data(), &PersonsViewModel::newPersonNamesChanged, m_ui->editNewPersonName, &QLineEdit::setText);
-
-    connect(m_ui->editSearch, &QLineEdit::textChanged, m_viewModel.data(), &PersonsViewModel::setFilter);
-
     connect(m_ui->editNewPersonName, &QLineEdit::returnPressed, m_viewModel->getActionAdd(), &QAction::trigger);
 
     m_ui->personsItemView->addAction(m_viewModel->getActionEdit());
@@ -35,14 +70,12 @@ void PersonsView::showEvent(QShowEvent *)
     }
 }
 
-void PersonsView::updateItemModel(QAbstractItemModel *model)
-{
-    m_ui->personsItemView->setModel(model);
-    connect(m_ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
-}
-
 void PersonsView::updateSelection()
 {
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
-    m_viewModel->updateSelection(indexes);
+    auto items = QList<QPersistentModelIndex>();
+    for (auto index : indexes) {
+        items.append(m_sortFilterModel->mapToSource(index));
+    }
+    m_viewModel->updateSelection(items);
 }

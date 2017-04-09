@@ -17,9 +17,9 @@ QSharedPointer<PersonsViewModel> PersonsViewModel::factory(const PersonRepositor
 }
 
 PersonsViewModel::PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent)
-    : QAbstractTableModel(parent)
+    : QObject(parent)
     , m_personRepository(personRepository)
-    , m_filterProxyModel(new QSortFilterProxyModel(this))
+    , m_persons(QObservableList<Person::Ptr>::empty())
     , m_actionAdd(new QAction(this))
     , m_actionEdit(new QAction(this))
     , m_actionRemove(new QAction(this))
@@ -34,66 +34,16 @@ PersonsViewModel::PersonsViewModel(const PersonRepository::Ptr &personRepository
 
     m_actionEdit->setEnabled(false);
     m_actionRemove->setEnabled(false);
-
-    m_filterProxyModel->setSourceModel(this);
-    m_filterProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_filterProxyModel->setFilterKeyColumn(-1);
 }
 
 void PersonsViewModel::initialize()
 {
-    setPersons(m_personRepository->getAll());
-    emit itemModelChanged(m_filterProxyModel);
+    m_persons = QObservableList<Person::Ptr>::fromList(m_personRepository->getAll());
 }
 
-int PersonsViewModel::rowCount(const QModelIndex &) const
+QObservableList<Person::Ptr> &PersonsViewModel::getPersons()
 {
-    return m_persons.size();
-}
-
-int PersonsViewModel::columnCount(const QModelIndex &) const
-{
-    return Column::Last;
-}
-
-QVariant PersonsViewModel::data(const QModelIndex &index, int role) const
-{
-    if (!index.isValid())
-        return QVariant();
-
-    auto &item = m_persons[index.row()];
-
-    QVariant result;
-
-    if (role == Qt::DisplayRole) {
-        switch (index.column()) {
-        case Column::Name:
-            result = item->getName();
-            break;
-        case Column::Surname:
-            result = item->getSurname();
-            break;
-        }
-    }
-
-    return result;
-}
-
-QVariant PersonsViewModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    if (orientation != Qt::Horizontal || role != Qt::DisplayRole)
-        return QVariant();
-
-    QVariant result;
-    switch (section) {
-    case Column::Name:
-        result = tr("Name");
-        break;
-    case Column::Surname:
-        result = tr("Surname");
-        break;
-    }
-    return result;
+    return m_persons;
 }
 
 QAction *PersonsViewModel::getActionAdd() const
@@ -122,52 +72,39 @@ void PersonsViewModel::addPerson(const QString &names)
 
     m_personRepository->save(newPerson);
 
-    beginInsertRows(QModelIndex(), m_persons.size(), m_persons.size());
     m_persons.append(newPerson);
-    endInsertRows();
 }
 
-void PersonsViewModel::setNewPersonNames(const QString &names)
+void PersonsViewModel::setNewPersonName(const QString &name)
 {
-    if (m_newPersonNames == names) return;
-    m_newPersonNames = names;
-    emit newPersonNamesChanged(m_newPersonNames);
+    if (m_newPersonName == name) return;
+    m_newPersonName = name;
+    emit newPersonNameChanged(m_newPersonName);
 }
 
-void PersonsViewModel::updateSelection(const QModelIndexList &selectedIndexes)
+const QString &PersonsViewModel::getNewPersonName() const
 {
-    m_selectedPersons.clear();
-    for (auto index : selectedIndexes) {
-        m_selectedPersons.append(QPersistentModelIndex(m_filterProxyModel->mapToSource(index)));
-    }
+    return m_newPersonName;
+}
 
+void PersonsViewModel::updateSelection(const QList<QPersistentModelIndex> &selectedItems)
+{
+    m_selectedPersons = selectedItems;
     m_actionEdit->setEnabled(m_selectedPersons.size() == 1);
     m_actionRemove->setEnabled(m_selectedPersons.size() > 0);
 }
 
-void PersonsViewModel::setFilter(const QString &filter)
-{
-    m_filterProxyModel->setFilterWildcard(filter);
-}
-
-void PersonsViewModel::setPersons(const QList<Person::Ptr> &persons)
-{
-    beginResetModel();
-    m_persons = persons;
-    endResetModel();
-}
-
 void PersonsViewModel::addByAction()
 {
-    if (!m_newPersonNames.isEmpty())
-        addPerson(m_newPersonNames);
-    setNewPersonNames(QString());
+    if (!m_newPersonName.isEmpty())
+        addPerson(m_newPersonName);
+    setNewPersonName(QString());
 }
 
 void PersonsViewModel::editByAction()
 {
     auto index = m_selectedPersons[0];
-    auto &item = m_persons[index.row()];
+    auto &item = m_persons.at(index.row());
 
     QDialog dialog;
 
@@ -198,9 +135,8 @@ void PersonsViewModel::editByAction()
 
     if (execCode == QDialog::Accepted) {
         auto person = personViewModel->buildPerson();
-        m_persons[index.row()] = person;
+        m_persons.update(index.row(), person);
         m_personRepository->save(person);
-        emit dataChanged(index.sibling(index.row(), 0), index.sibling(index.row(), Column::Last - 1));
     }
 }
 
@@ -210,13 +146,11 @@ void PersonsViewModel::removeByAction()
         return;
 
     auto personIndexesToRemove = m_selectedPersons;
-    updateSelection(QModelIndexList());
+    updateSelection(QList<QPersistentModelIndex>());
 
     for (auto personIndex : personIndexesToRemove) {
         auto row = personIndex.row();
-        beginRemoveRows(QModelIndex(), row, row);
-        m_personRepository->remove(m_persons[row]);
+        m_personRepository->remove(m_persons.at(row));
         m_persons.removeAt(row);
-        endRemoveRows();
     }
 }

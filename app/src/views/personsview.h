@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 #include <QWidget>
 
-class QAbstractItemModel;
+class QSortFilterProxyModel;
 class PersonsViewModel;
 
 namespace Ui {
@@ -26,9 +26,10 @@ private:
     QSharedPointer<PersonsViewModel> m_viewModel;
     QScopedPointer<Ui::PersonsView> m_ui;
 
+    QSortFilterProxyModel *m_sortFilterModel;
+
     bool m_firstShow;
 
 private slots:
-    void updateItemModel(QAbstractItemModel *model);
     void updateSelection();
 };

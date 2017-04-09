@@ -1,55 +1,46 @@
 #pragma once
 
-#include <QAbstractTableModel>
 #include <QSharedPointer>
 
 #include <dal/personrepository.h>
 #include <data/person.h>
 
-class QSortFilterProxyModel;
+#include <moderngrids/qobservablelist.h>
+
 class QAction;
 
-class PersonsViewModel : public QAbstractTableModel
+class PersonsViewModel : public QObject
 {
     Q_OBJECT
 
-public:
-    enum Column {
-        Surname = 0,
-        Name,
-        Last
-    };
+    Q_PROPERTY(QString newPersonName READ getNewPersonName WRITE setNewPersonName NOTIFY newPersonNameChanged)
 
+public:
     static QSharedPointer<PersonsViewModel> factory(const PersonRepository::Ptr &personRepository);
 
 public:
     PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent = nullptr);
     void initialize();
 
-    virtual int rowCount(const QModelIndex &parent) const override;
-    virtual int columnCount(const QModelIndex &parent) const override;
-    virtual QVariant data(const QModelIndex &index, int role) const override;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    QObservableList<Person::Ptr> &getPersons();
 
     QAction *getActionAdd() const;
     QAction *getActionEdit() const;
     QAction *getActionRemove() const;
 
+    const QString &getNewPersonName() const;
+
 public slots:
     void addPerson(const QString &names);
-    void setNewPersonNames(const QString &names);
-    void updateSelection(const QModelIndexList &selectedIndexes);
-    void setFilter(const QString &filter);
+    void setNewPersonName(const QString &name);
+    void updateSelection(const QList<QPersistentModelIndex> &selectedItems);
 
 private:
-    void setPersons(const QList<Person::Ptr> &persons);
-
     PersonRepository::Ptr m_personRepository;
-    QSortFilterProxyModel *m_filterProxyModel;
 
     QList<QPersistentModelIndex> m_selectedPersons;
-    QList<Person::Ptr> m_persons;
-    QString m_newPersonNames;
+    QObservableList<Person::Ptr> m_persons;
+    QString m_newPersonName;
 
     QAction *m_actionAdd;
     QAction *m_actionEdit;
@@ -61,6 +52,5 @@ private slots:
     void removeByAction();
 
 signals:
-    void itemModelChanged(QAbstractItemModel *model);
-    void newPersonNamesChanged(const QString &newPersonNames);
+    void newPersonNameChanged(const QString &newPersonName);
 };
