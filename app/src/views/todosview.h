@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QSharedPointer>
+#include <QScopedPointer>
 #include <QWidget>
 
 class QAbstractItemModel;
@@ -14,14 +16,15 @@ class TodosView : public QWidget
     Q_OBJECT
 
 public:
-    explicit TodosView(TodosViewModel *viewModel, QWidget *parent = 0);
-    ~TodosView();
+    TodosView(
+        const QSharedPointer<TodosViewModel> &viewModel, 
+        QWidget *parent = 0);
 
     virtual void showEvent(QShowEvent *event) override;
 
 private:
-    TodosViewModel *m_viewModel;
-    Ui::TodosView *ui;
+    QSharedPointer<TodosViewModel> m_viewModel;
+    QScopedPointer<Ui::TodosView> m_ui;
 
     bool m_firstShow;
 

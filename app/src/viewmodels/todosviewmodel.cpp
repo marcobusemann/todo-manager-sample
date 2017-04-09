@@ -10,6 +10,13 @@
 #include <QAction>
 #include <QDialog>
 
+QSharedPointer<TodosViewModel> TodosViewModel::factory(
+    const TodoRepository::Ptr &todoRepository,
+    const PersonRepository::Ptr &personRepository)
+{
+    return QSharedPointer<TodosViewModel>(new TodosViewModel(todoRepository, personRepository));
+}
+
 TodosViewModel::TodosViewModel(
         const TodoRepository::Ptr &todoRepository,
         const PersonRepository::Ptr &personRepository,
@@ -166,7 +173,7 @@ void TodosViewModel::editByAction()
 
     QDialog dialog;
 
-    auto *todoViewModel = new TodoViewModel(m_personRepository, &dialog);
+    auto todoViewModel = TodoViewModel::factory(m_personRepository);
     auto *todoView = new TodoView(todoViewModel);
     todoViewModel->setTodo(item);
 

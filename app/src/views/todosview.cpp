@@ -2,30 +2,28 @@
 #include "viewmodels/todosviewmodel.h"
 #include "ui_todosview.h"
 
-TodosView::TodosView(TodosViewModel *viewModel, QWidget *parent)
+TodosView::TodosView(
+    const QSharedPointer<TodosViewModel> &viewModel, 
+    QWidget *parent)
     : QWidget(parent)
     , m_viewModel(viewModel)
-    , ui(new Ui::TodosView)
+    , m_ui(new Ui::TodosView())
     , m_firstShow(true)
 {
-    ui->setupUi(this);
-    connect(ui->todosItemView, &QTreeView::doubleClicked, m_viewModel->getActionEdit(), &QAction::trigger);
+    m_ui->setupUi(this);
 
-    connect(m_viewModel, &TodosViewModel::itemModelChanged, this, &TodosView::updateItemModel);
-    connect(ui->editTodoTitle, &QLineEdit::textChanged, m_viewModel, &TodosViewModel::setNewTodoTitle);
-    connect(m_viewModel, &TodosViewModel::newTodoTitleChanged, ui->editTodoTitle, &QLineEdit::setText);
+    connect(m_ui->todosItemView, &QTreeView::doubleClicked, m_viewModel->getActionEdit(), &QAction::trigger);
 
-    connect(ui->editFind, &QLineEdit::textChanged, m_viewModel, &TodosViewModel::setFilter);
+    connect(m_viewModel.data(), &TodosViewModel::itemModelChanged, this, &TodosView::updateItemModel);
+    connect(m_ui->editTodoTitle, &QLineEdit::textChanged, m_viewModel.data(), &TodosViewModel::setNewTodoTitle);
+    connect(m_viewModel.data(), &TodosViewModel::newTodoTitleChanged, m_ui->editTodoTitle, &QLineEdit::setText);
 
-    connect(ui->editTodoTitle, &QLineEdit::returnPressed, m_viewModel->getActionAdd(), &QAction::trigger);
+    connect(m_ui->editFind, &QLineEdit::textChanged, m_viewModel.data(), &TodosViewModel::setFilter);
 
-    ui->todosItemView->addAction(m_viewModel->getActionEdit());
-    ui->todosItemView->addAction(m_viewModel->getActionRemove());
-}
+    connect(m_ui->editTodoTitle, &QLineEdit::returnPressed, m_viewModel->getActionAdd(), &QAction::trigger);
 
-TodosView::~TodosView()
-{
-    delete ui;
+    m_ui->todosItemView->addAction(m_viewModel->getActionEdit());
+    m_ui->todosItemView->addAction(m_viewModel->getActionRemove());
 }
 
 void TodosView::showEvent(QShowEvent *)
@@ -38,12 +36,12 @@ void TodosView::showEvent(QShowEvent *)
 
 void TodosView::updateItemModel(QAbstractItemModel *model)
 {
-    ui->todosItemView->setModel(model);
-    connect(ui->todosItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TodosView::updateSelection);
+    m_ui->todosItemView->setModel(model);
+    connect(m_ui->todosItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TodosView::updateSelection);
 }
 
 void TodosView::updateSelection()
 {
-    auto indexes = ui->todosItemView->selectionModel()->selectedRows();
+    auto indexes = m_ui->todosItemView->selectionModel()->selectedRows();
     m_viewModel->updateSelection(indexes);
 }

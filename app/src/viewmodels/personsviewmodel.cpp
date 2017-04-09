@@ -11,6 +11,11 @@
 #include <views/personview.h>
 #include <viewmodels/personviewmodel.h>
 
+QSharedPointer<PersonsViewModel> PersonsViewModel::factory(const PersonRepository::Ptr &personRepository)
+{
+    return QSharedPointer<PersonsViewModel>(new PersonsViewModel(personRepository));
+}
+
 PersonsViewModel::PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent)
     : QAbstractTableModel(parent)
     , m_personRepository(personRepository)
@@ -166,8 +171,8 @@ void PersonsViewModel::editByAction()
 
     QDialog dialog;
 
-    auto *personViewModel = new PersonViewModel(&dialog);
-    auto *personView = new PersonView(personViewModel);
+    auto personViewModel = PersonViewModel::factory();
+    auto personView = new PersonView(personViewModel);
     personViewModel->setPerson(item);
 
     auto *buttonSave = new QPushButton();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSharedPointer>
 #include <QObject>
 
 #include <data/person.h>
@@ -7,6 +8,9 @@
 class PersonViewModel : public QObject
 {
     Q_OBJECT
+
+public:
+    static QSharedPointer<PersonViewModel> factory();
 
 public:
     PersonViewModel(QObject *parent = 0);

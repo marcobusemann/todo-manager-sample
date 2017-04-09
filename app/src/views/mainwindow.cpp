@@ -9,25 +9,24 @@
 #include <views/personsview.h>
 #include <dal/personrepository.h>
 
-MainWindow::MainWindow(const QMetaOrm::SessionFactory::Ptr &sessionFactory, QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(
+    const QMetaOrm::SessionFactory::Ptr &sessionFactory, 
+    QWidget *parent) 
+    : QMainWindow(parent)
+    , m_ui(new Ui::MainWindow())
 {
-    ui->setupUi(this);
+    m_ui->setupUi(this);
 
     auto personRepository = PersonRepository::factory(sessionFactory);
     auto todoRepository = TodoRepository::factory(sessionFactory);
 
-    auto todosViewModel = new TodosViewModel(todoRepository, personRepository, this);
+    auto todosViewModel = TodosViewModel::factory(todoRepository, personRepository);
     auto todosView = new TodosView(todosViewModel, this);
-    ui->layoutTodos->addWidget(todosView);
+    m_ui->layoutTodos->addWidget(todosView);
 
-    auto personsViewModel = new PersonsViewModel(personRepository, this);
+    auto personsViewModel = PersonsViewModel::factory(personRepository);
     auto personsView = new PersonsView(personsViewModel, this);
-    ui->layoutPersons->addWidget(personsView);
+    m_ui->layoutPersons->addWidget(personsView);
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
+MainWindow::~MainWindow() = default;

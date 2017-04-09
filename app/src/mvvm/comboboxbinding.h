@@ -3,6 +3,8 @@
 #include <QSharedPointer>
 #include <QObject>
 
+#include <memory>
+
 class QAbstractItemModel;
 class QComboBox;
 class ComboBoxBinding: public QObject
@@ -17,6 +19,24 @@ public:
         const QString &propertyName)
     {
         return new ComboBoxBinding(edit, itemModel, item.data(), propertyName);
+    }
+
+    static ComboBoxBinding *factory(
+        QComboBox *edit,
+        QAbstractItemModel *itemModel,
+        std::unique_ptr<QObject> item,
+        const QString &propertyName)
+    {
+        return new ComboBoxBinding(edit, itemModel, item.get(), propertyName);
+    }
+
+    static ComboBoxBinding *factory(
+        QComboBox *edit,
+        QAbstractItemModel *itemModel,
+        std::shared_ptr<QObject> item,
+        const QString &propertyName)
+    {
+        return new ComboBoxBinding(edit, itemModel, item.get(), propertyName);
     }
 
     static ComboBoxBinding *factory(

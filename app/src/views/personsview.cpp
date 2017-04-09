@@ -3,30 +3,28 @@
 
 #include <viewmodels/personsviewmodel.h>
 
-PersonsView::PersonsView(PersonsViewModel *viewModel, QWidget *parent)
+PersonsView::PersonsView(
+    const QSharedPointer<PersonsViewModel> &viewModel,
+    QWidget *parent)
     : QWidget(parent)
     , m_viewModel(viewModel)
-    , ui(new Ui::PersonsView)
+    , m_ui(new Ui::PersonsView())
     , m_firstShow(true)
 {
-    ui->setupUi(this);
-    connect(ui->personsItemView, &QTreeView::doubleClicked, m_viewModel->getActionEdit(), &QAction::trigger);
+    m_ui->setupUi(this);
 
-    connect(m_viewModel, &PersonsViewModel::itemModelChanged, this, &PersonsView::updateItemModel);
-    connect(ui->editNewPersonName, &QLineEdit::textChanged, m_viewModel, &PersonsViewModel::setNewPersonNames);
-    connect(m_viewModel, &PersonsViewModel::newPersonNamesChanged, ui->editNewPersonName, &QLineEdit::setText);
+    connect(m_ui->personsItemView, &QTreeView::doubleClicked, m_viewModel->getActionEdit(), &QAction::trigger);
 
-    connect(ui->editSearch, &QLineEdit::textChanged, m_viewModel, &PersonsViewModel::setFilter);
+    connect(m_viewModel.data(), &PersonsViewModel::itemModelChanged, this, &PersonsView::updateItemModel);
+    connect(m_ui->editNewPersonName, &QLineEdit::textChanged, m_viewModel.data(), &PersonsViewModel::setNewPersonNames);
+    connect(m_viewModel.data(), &PersonsViewModel::newPersonNamesChanged, m_ui->editNewPersonName, &QLineEdit::setText);
 
-    connect(ui->editNewPersonName, &QLineEdit::returnPressed, m_viewModel->getActionAdd(), &QAction::trigger);
+    connect(m_ui->editSearch, &QLineEdit::textChanged, m_viewModel.data(), &PersonsViewModel::setFilter);
 
-    ui->personsItemView->addAction(m_viewModel->getActionEdit());
-    ui->personsItemView->addAction(m_viewModel->getActionRemove());
-}
+    connect(m_ui->editNewPersonName, &QLineEdit::returnPressed, m_viewModel->getActionAdd(), &QAction::trigger);
 
-PersonsView::~PersonsView()
-{
-    delete ui;
+    m_ui->personsItemView->addAction(m_viewModel->getActionEdit());
+    m_ui->personsItemView->addAction(m_viewModel->getActionRemove());
 }
 
 void PersonsView::showEvent(QShowEvent *)
@@ -39,12 +37,12 @@ void PersonsView::showEvent(QShowEvent *)
 
 void PersonsView::updateItemModel(QAbstractItemModel *model)
 {
-    ui->personsItemView->setModel(model);
-    connect(ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
+    m_ui->personsItemView->setModel(model);
+    connect(m_ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
 }
 
 void PersonsView::updateSelection()
 {
-    auto indexes = ui->personsItemView->selectionModel()->selectedRows();
+    auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     m_viewModel->updateSelection(indexes);
 }

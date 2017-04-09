@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QSharedPointer>
 
 #include <dal/personrepository.h>
 #include <data/person.h>
@@ -18,6 +19,8 @@ public:
         Name,
         Last
     };
+
+    static QSharedPointer<PersonsViewModel> factory(const PersonRepository::Ptr &personRepository);
 
 public:
     PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent = nullptr);

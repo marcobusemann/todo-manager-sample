@@ -1,23 +1,25 @@
 #pragma once
 
+#include <QSharedPointer>
+#include <QScopedPointer>
 #include <QWidget>
-#include <QMetaProperty>
+
+class PersonViewModel;
 
 namespace Ui {
     class PersonView;
 }
-
-class PersonViewModel;
 
 class PersonView : public QWidget
 {
     Q_OBJECT
 
 public:
-    PersonView(PersonViewModel *personViewModel, QWidget *parent = 0);
-    ~PersonView();
+    PersonView(
+        const QSharedPointer<PersonViewModel> &personViewModel, 
+        QWidget *parent = 0);
 
 private:
-    Ui::PersonView *ui;
-    PersonViewModel *m_viewModel;
+    QSharedPointer<PersonViewModel> m_viewModel;
+    QScopedPointer<Ui::PersonView> m_ui;
 };

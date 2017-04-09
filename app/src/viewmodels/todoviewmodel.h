@@ -7,6 +7,7 @@
 
 #include <moderngrids/qobservablelist.h>
 
+#include <QSharedPointer>
 #include <QObject>
 #include <QList>
 
@@ -19,6 +20,9 @@ class TodoViewModel : public QObject
     Q_OBJECT
 
     Q_PROPERTY(Person::Ptr currentNewWorker READ getCurrentNewWorker WRITE setCurrentNewWorker NOTIFY currentNewWorkerChanged)
+
+public:
+    static QSharedPointer<TodoViewModel> factory(const PersonRepository::Ptr &personRepository);
 
 public:
     TodoViewModel(const PersonRepository::Ptr &personRepository, QObject *parent = nullptr);

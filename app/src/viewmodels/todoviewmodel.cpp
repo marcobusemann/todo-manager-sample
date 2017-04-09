@@ -2,6 +2,11 @@
 #include <itemmodels/personlistmodel.h>
 #include <QAction>
 
+QSharedPointer<TodoViewModel> TodoViewModel::factory(const PersonRepository::Ptr &personRepository)
+{
+    return QSharedPointer<TodoViewModel>(new TodoViewModel(personRepository));
+}
+
 TodoViewModel::TodoViewModel(const PersonRepository::Ptr &personRepository, QObject *parent)
     : QObject(parent)
     , m_personRepository(personRepository)

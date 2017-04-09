@@ -1,5 +1,10 @@
 #include "personviewmodel.h"
 
+QSharedPointer<PersonViewModel> PersonViewModel::factory()
+{
+    return QSharedPointer<PersonViewModel>(new PersonViewModel());
+}
+
 PersonViewModel::PersonViewModel(QObject *parent)
     : QObject(parent)
     , m_person(new Person())

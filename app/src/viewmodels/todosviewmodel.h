@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QSharedPointer>
 
 #include <dal/todorepository.h>
 #include <dal/personrepository.h>
@@ -20,11 +21,15 @@ public:
         Last
     };
 
+    static QSharedPointer<TodosViewModel> factory(
+        const TodoRepository::Ptr &todoRepository,
+        const PersonRepository::Ptr &personRepository);
+
 public:
     TodosViewModel(
-            const TodoRepository::Ptr &todoRepository,
-            const PersonRepository::Ptr &personRepository,
-            QObject *parent = nullptr);
+        const TodoRepository::Ptr &todoRepository,
+        const PersonRepository::Ptr &personRepository,
+        QObject *parent = nullptr);
     void initialize();
 
     virtual int rowCount(const QModelIndex &parent) const override;
