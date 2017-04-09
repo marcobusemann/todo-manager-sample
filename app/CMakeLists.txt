@@ -57,11 +57,6 @@ set(source-dal
     src/dal/todoworkers.cpp)
 source_group("dal" FILES ${source-dal})
 
-set(source-itemmodels
-    src/itemmodels/personlistmodel.h
-    src/itemmodels/personlistmodel.cpp)
-source_group("itemmodels" FILES ${source-itemmodels})
-
 set(source-mvvm
     src/mvvm/lineeditbinding.h
     src/mvvm/lineeditbinding.cpp

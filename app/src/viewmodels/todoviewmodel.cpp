@@ -1,5 +1,4 @@
 #include <viewmodels/todoviewmodel.h>
-#include <itemmodels/personlistmodel.h>
 #include <QAction>
 
 QSharedPointer<TodoViewModel> TodoViewModel::factory(const PersonRepository::Ptr &personRepository)
