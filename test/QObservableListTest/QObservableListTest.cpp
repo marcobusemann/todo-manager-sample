@@ -87,6 +87,16 @@ private Q_SLOTS:
         QCOMPARE(list.size(), 0);
     }
 
+    void update_oneItemAtIndex0_updatedItemAtIndex0()
+    {
+        QObservableList<int> list;
+        list.append(10);
+
+        list.update(0, 15);
+
+        QCOMPARE(list.at(0), 15);
+    }
+
     void indexOf_listIsEmpty_minusOne()
     {
         QObservableList<int> list;
@@ -295,6 +305,38 @@ private Q_SLOTS:
         QCOMPARE(handlerHasBeenCalled, true);
     }
 
+    void beforeUpdate_listHasOneElement_handlerIsCalledBeforeListIsUpdated()
+    {
+        QObservableList<int> list;
+        list.append(10);
+
+        bool handlerHasBeenCalled = false;
+        list.beforeUpdate() += [&handlerHasBeenCalled, &list](int index, const int &value) {
+            handlerHasBeenCalled = true;
+            QCOMPARE(value, 15);
+        };
+
+        list.update(0, 15);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
+    void afterUpdate_listHasOneElement_handlerIsCalledAfterListIsUpdated()
+    {
+        QObservableList<int> list;
+        list.append(10);
+
+        bool handlerHasBeenCalled = false;
+        list.afterUpdate() += [&handlerHasBeenCalled, &list](int index, const int &value) {
+            handlerHasBeenCalled = true;
+            QCOMPARE(value, 15);
+        };
+
+        list.update(0, 15);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
     void beforeAddBatch_listIsEmpty_handlerIsCalledBeforeListIsIncreased()
     {
         QObservableList<int> list;
@@ -442,6 +484,21 @@ private Q_SLOTS:
         };
 
         list.removeAt(0);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
+    void afterChangeForUpdate_listHasOneElement_handlerIsCalledAfterListHasChanged()
+    {
+        QObservableList<int> list;
+        list.append(10);
+
+        bool handlerHasBeenCalled = false;
+        list.afterChange() += [&handlerHasBeenCalled]() {
+            handlerHasBeenCalled = true;
+        };
+
+        list.update(0, 15);
 
         QCOMPARE(handlerHasBeenCalled, true);
     }

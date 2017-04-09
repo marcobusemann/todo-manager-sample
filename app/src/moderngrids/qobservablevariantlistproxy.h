@@ -18,6 +18,7 @@ public:
         , m_atForwarder(rhs.m_atForwarder)
         , m_appendForwarder(rhs.m_appendForwarder)
         , m_insertForwarder(rhs.m_insertForwarder)
+        , m_updateForwarder(rhs.m_updateForwarder)
         , m_removeForwarder(rhs.m_removeForwarder)
         , m_sizeForwarder(rhs.m_sizeForwarder)
         , m_isEmptyForwarder(rhs.m_isEmptyForwarder)
@@ -32,6 +33,7 @@ public:
         , m_atForwarder(std::move(rhs.m_atForwarder))
         , m_appendForwarder(std::move(rhs.m_appendForwarder))
         , m_insertForwarder(std::move(rhs.m_insertForwarder))
+        , m_updateForwarder(std::move(rhs.m_updateForwarder))
         , m_removeForwarder(std::move(rhs.m_removeForwarder))
         , m_sizeForwarder(std::move(rhs.m_sizeForwarder))
         , m_isEmptyForwarder(std::move(rhs.m_isEmptyForwarder))
@@ -47,6 +49,7 @@ public:
         m_atForwarder = rhs.m_atForwarder;
         m_appendForwarder = rhs.m_appendForwarder;
         m_insertForwarder = rhs.m_insertForwarder;
+        m_updateForwarder = rhs.m_updateForwarder;
         m_removeForwarder = rhs.m_removeForwarder;
         m_sizeForwarder = rhs.m_sizeForwarder;
         m_isEmptyForwarder = rhs.m_isEmptyForwarder;
@@ -94,6 +97,10 @@ public:
             list.insert(index, item.value<T>()); 
         };
 
+        result.m_updateForwarder = [&list](int index, const QVariant &item) {
+            list.update(index, item.value<T>());
+        };
+
         result.m_removeForwarder = [&list](int index) { 
             list.removeAt(index); 
         };
@@ -134,6 +141,16 @@ public:
             proxy.m_proxiedAddAfter = list.afterAdd().attach([&proxy](int index, const T &item) -> void
             {
                 proxy.m_addAfter(index, QVariant::fromValue(item));
+            });
+
+            proxy.m_proxiedUpdateBefore = list.beforeUpdate().attach([&proxy](int index, const T &item) -> void
+            {
+                proxy.m_updateBefore(index, QVariant::fromValue(item));
+            });
+
+            proxy.m_proxiedUpdateAfter = list.afterUpdate().attach([&proxy](int index, const T &item) -> void
+            {
+                proxy.m_updateAfter(index, QVariant::fromValue(item));
             });
 
             proxy.m_proxiedAddBatchAfter = list.afterAddBatch().attach([&proxy](int index, const QList<T> &items) -> void
@@ -182,6 +199,11 @@ public:
         m_insertForwarder(index, item);
     }
 
+    void update(int index, const QVariant &item)
+    {
+        m_updateForwarder(index, item);
+    }
+
     void removeAt(int index)
     {
         m_removeForwarder(index);
@@ -222,6 +244,9 @@ public:
     QEventHandler<void(int, const QVariant &)> &beforeRemove() { return m_removeBefore; }
     QEventHandler<void(int, const QVariant &)> &afterRemove() { return m_removeAfter; }
 
+    QEventHandler<void(int, const QVariant &)> &beforeUpdate() { return m_updateBefore; }
+    QEventHandler<void(int, const QVariant &)> &afterUpdate() { return m_updateAfter; }
+
     QEventHandler<void()> &beforeClear() { return m_clearBefore; }
     QEventHandler<void()> &afterClear() { return m_clearAfter; }
 
@@ -233,6 +258,7 @@ private:
     std::function<QVariant(int)> m_atForwarder;
     std::function<void(const QVariant &)> m_appendForwarder;
     std::function<void(int, const QVariant &)> m_insertForwarder;
+    std::function<void(int, const QVariant &)> m_updateForwarder;
     std::function<void(int)> m_removeForwarder;
     std::function<int()> m_sizeForwarder;
     std::function<bool()> m_isEmptyForwarder;
@@ -248,6 +274,9 @@ private:
     QEventHandler<void(int, const QVariant &)> m_removeBefore;
     QEventHandler<void(int, const QVariant &)> m_removeAfter;
 
+    QEventHandler<void(int, const QVariant &)> m_updateBefore;
+    QEventHandler<void(int, const QVariant &)> m_updateAfter;
+
     QEventHandler<void()> m_clearBefore;
     QEventHandler<void()> m_clearAfter;
 
@@ -259,6 +288,8 @@ private:
     QScopePtr m_proxiedAddBatchAfter;
     QScopePtr m_proxiedRemoveBefore;
     QScopePtr m_proxiedRemoveAfter;
+    QScopePtr m_proxiedUpdateBefore;
+    QScopePtr m_proxiedUpdateAfter;
     QScopePtr m_proxiedClearBefore;
     QScopePtr m_proxiedClearAfter;
     QScopePtr m_proxiedChangeAfter;

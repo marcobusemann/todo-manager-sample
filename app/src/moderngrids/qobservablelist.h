@@ -84,6 +84,14 @@ public:
         m_changeAfter();
     }
 
+    void update(int index, const T &item)
+    {
+        m_updateBefore(index, item);
+        m_items[index] = item;
+        m_updateAfter(index, item);
+        m_changeAfter();
+    }
+
     void removeAt(int index)
     {
         const T item = at(index);
@@ -133,6 +141,9 @@ public:
     QEventHandler<void(int, const T &)> &beforeRemove() { return m_removeBefore; }
     QEventHandler<void(int, const T &)> &afterRemove() { return m_removeAfter; }
 
+    QEventHandler<void(int, const T &)> &beforeUpdate() { return m_updateBefore; }
+    QEventHandler<void(int, const T &)> &afterUpdate() { return m_updateAfter; }
+
     QEventHandler<void()> &beforeClear() { return m_clearBefore; }
     QEventHandler<void()> &afterClear() { return m_clearAfter; }
 
@@ -147,6 +158,9 @@ private:
 
     QEventHandler<void(int, const T &)> m_removeBefore;
     QEventHandler<void(int, const T &)> m_removeAfter;
+
+    QEventHandler<void(int, const T &)> m_updateBefore;
+    QEventHandler<void(int, const T &)> m_updateAfter;
 
     QEventHandler<void()> m_clearBefore;
     QEventHandler<void()> m_clearAfter;

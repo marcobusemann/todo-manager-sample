@@ -115,6 +115,13 @@ void ObservableVariantListModel::linkTo(QObservableVariantListProxy &source)
         this->endRemoveRows();
     });
 
+    m_updateAfterScope = source.afterUpdate().attach([this](int idx, const QVariant &) -> void
+    {
+        QModelIndex left = index(idx, 0);
+        QModelIndex right = index(idx, columnCount() - 1);
+        emit dataChanged(left, right);
+    });
+
     m_clearBeforeScope = source.beforeClear().attach([this]()
     {
         this->beginResetModel();
@@ -135,6 +142,7 @@ void ObservableVariantListModel::unlinkFrom(QObservableVariantListProxy &source)
     m_addBatchAfterScope = QScopePtr();
     m_removeBeforeScope = QScopePtr();
     m_removeAfterScope = QScopePtr();
+    m_updateAfterScope = QScopePtr();
     m_clearBeforeScope = QScopePtr();
     m_clearAfterScope = QScopePtr();
 }

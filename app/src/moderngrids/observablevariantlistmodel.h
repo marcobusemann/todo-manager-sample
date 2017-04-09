@@ -30,6 +30,7 @@ private:
     QScopePtr m_addBatchAfterScope;
     QScopePtr m_removeBeforeScope;
     QScopePtr m_removeAfterScope;
+    QScopePtr m_updateAfterScope;
     QScopePtr m_clearBeforeScope;
     QScopePtr m_clearAfterScope;
 };

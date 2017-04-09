@@ -122,6 +122,17 @@ private Q_SLOTS:
         QCOMPARE(proxy.at(0), QVariant(10));
     }
 
+    void update_listHasOnElement_oneElementHasChanged()
+    {
+        auto list = QObservableList<int>();
+        auto proxy = QObservableVariantListProxy::from(list);
+        proxy.append(10);
+
+        proxy.update(0, 15);
+
+        QCOMPARE(proxy.at(0), QVariant(15));
+    }
+
     void removeAt_oneItem_zeroItems()
     {
         auto list = QObservableList<int>();
@@ -356,6 +367,40 @@ private Q_SLOTS:
         QCOMPARE(handlerHasBeenCalled, true);
     }
 
+    void beforeUpdate_listHasOneElement_handlerIsCalledBeforeListIsUpdated()
+    {
+        auto list = QObservableList<int>();
+        auto proxy = QObservableVariantListProxy::from(list);
+        proxy.append(10);
+
+        bool handlerHasBeenCalled = false;
+        proxy.beforeUpdate() += [&handlerHasBeenCalled, &proxy](int index, const QVariant &value) {
+            handlerHasBeenCalled = true;
+            QCOMPARE(value, QVariant(15));
+        };
+
+        proxy.update(0, 15);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
+    void afterUpdate_listHasOneElement_handlerIsCalledAfterListIsUpdated()
+    {
+        auto list = QObservableList<int>();
+        auto proxy = QObservableVariantListProxy::from(list);
+        proxy.append(10);
+
+        bool handlerHasBeenCalled = false;
+        proxy.afterUpdate() += [&handlerHasBeenCalled, &proxy](int index, const QVariant &value) {
+            handlerHasBeenCalled = true;
+            QCOMPARE(value, QVariant(15));
+        };
+
+        proxy.update(0, 15);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
     void beforeAddBatch_listIsEmpty_handlerIsCalledBeforeListIsIncreased()
     {
         auto list = QObservableList<int>();
@@ -492,6 +537,22 @@ private Q_SLOTS:
         };
 
         proxy.insert(0, 10);
+
+        QCOMPARE(handlerHasBeenCalled, true);
+    }
+
+    void afterChangeForUpdate_listIsEmpty_handlerIsCalledAfterListHasChanged()
+    {
+        auto list = QObservableList<int>();
+        auto proxy = QObservableVariantListProxy::from(list);
+        proxy.append(10);
+
+        bool handlerHasBeenCalled = false;
+        proxy.afterChange() += [&handlerHasBeenCalled]() {
+            handlerHasBeenCalled = true;
+        };
+
+        proxy.update(0, 15);
 
         QCOMPARE(handlerHasBeenCalled, true);
     }
