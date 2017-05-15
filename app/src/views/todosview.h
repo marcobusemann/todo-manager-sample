@@ -4,6 +4,7 @@
 #include <QScopedPointer>
 #include <QWidget>
 
+class QSortFilterProxyModel;
 class QAbstractItemModel;
 class TodosViewModel;
 
@@ -25,10 +26,10 @@ public:
 private:
     QSharedPointer<TodosViewModel> m_viewModel;
     QScopedPointer<Ui::TodosView> m_ui;
+    QSortFilterProxyModel *m_sortFilterItemModel;
 
     bool m_firstShow;
 
 private slots:
-    void updateItemModel(QAbstractItemModel *model);
     void updateSelection();
 };
