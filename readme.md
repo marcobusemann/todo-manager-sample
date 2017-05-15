@@ -4,7 +4,7 @@ A sample todo manager using Qt 5 and QMetaOrm. This basic example will be enhanc
 # Getting started
 ```
 mkdir build && cd build
-cmake ..
+cmake -DCMAKE_PREFIX_PATH=<PathToQt> ..
 make
 ./todo-manager-sample
 ```
