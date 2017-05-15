@@ -14,6 +14,8 @@ class TodosViewModel : public QAbstractTableModel
 {
     Q_OBJECT
 
+    Q_PROPERTY(QString newTodoTitle READ getNewTodoTitle WRITE setNewTodoTitle NOTIFY newTodoTitleChanged)
+
 public:
     enum Column {
         Title = 0,
@@ -40,6 +42,8 @@ public:
     QAction *getActionAdd() const;
     QAction *getActionEdit() const;
     QAction *getActionRemove() const;
+
+    QString getNewTodoTitle() const { return m_newTodoTitle; }
 
 public slots:
     void addTodo(const QString &title);
