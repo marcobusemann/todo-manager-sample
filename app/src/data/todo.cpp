@@ -14,6 +14,22 @@ Todo::Todo()
     , m_endDate(QDateTime::currentDateTime())
 {}
 
+Todo::Todo(const Todo &rhs)
+{
+   copy(rhs);
+}
+
+Todo &Todo::operator=(const Todo &rhs)
+{
+   copy(rhs);
+   return *this;
+}
+
+bool Todo::operator==(const Todo &rhs)
+{
+   return m_id == rhs.m_id;
+}
+
 void Todo::copy(const Todo &rhs)
 {
     setId(rhs.m_id);

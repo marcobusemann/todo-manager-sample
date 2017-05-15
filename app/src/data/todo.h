@@ -24,6 +24,9 @@ public:
 
 public:
     Todo();
+    Todo(const Todo &rhs);
+    Todo &operator=(const Todo &rhs);
+    bool operator==(const Todo &rhs);
 
     int getId() const;
     const QString &getTitle() const;
