@@ -14,6 +14,7 @@
 #include "observableset.h"
 #include "qobservablelist.h"
 
+#include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
 #include <QIcon>
 #include <QSet>
@@ -98,6 +99,256 @@ private:
     QAbstractItemModel *m_base;
 };
 
+/*!
+   This decorator implements mapFromSource and mapToSource to map to the root model instead of the next source.
+*/
+class SourceMappingModelDecorator : public QAbstractProxyModel
+{
+public: 
+   SourceMappingModelDecorator(QObject *parent)
+      : QAbstractProxyModel(parent)
+   {}
+
+   virtual QModelIndex buddy(const QModelIndex &index) const override
+   {
+      return sourceModel()->buddy(index);
+   }
+
+   virtual bool canFetchMore(const QModelIndex &parent) const override
+   {
+      return sourceModel()->canFetchMore(parent);
+   }
+
+   virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override
+   {
+      return sourceModel()->dropMimeData(data, action, row, column, parent);
+   }
+
+   virtual void fetchMore(const QModelIndex &parent) override
+   {
+      return sourceModel()->fetchMore(parent);
+   }
+
+   virtual Qt::ItemFlags flags(const QModelIndex &index) const override
+   {
+      return sourceModel()->flags(index);
+   }
+
+   virtual bool hasChildren(const QModelIndex &parent = QModelIndex()) const override
+   {
+      return sourceModel()->hasChildren(parent);
+   }
+
+   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
+   {
+      return sourceModel()->headerData(section, orientation, role);
+   }
+
+   virtual bool insertColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override
+   {
+      return sourceModel()->insertColumns(column, count, parent);
+   }
+
+   virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override
+   {
+      return sourceModel()->insertRows(row, count, parent);
+   }
+
+   virtual QMap<int, QVariant> itemData(const QModelIndex &index) const override
+   {
+      return sourceModel()->itemData(index);
+   }
+
+   virtual QModelIndexList match(const QModelIndex &start, int role, const QVariant &value, int hits = 1, Qt::MatchFlags flags = Qt::MatchFlags(Qt::MatchStartsWith | Qt::MatchWrap)) const override
+   {
+      return sourceModel()->match(start, role, value, hits, flags);
+   }
+
+   virtual QMimeData *mimeData(const QModelIndexList &indexes) const override
+   {
+      return sourceModel()->mimeData(indexes);
+   }
+
+   virtual QStringList mimeTypes() const override
+   {
+      return sourceModel()->mimeTypes();
+   }
+
+   virtual bool removeColumns(int column, int count, const QModelIndex &parent = QModelIndex()) override
+   {
+      return sourceModel()->removeColumns(column, count, parent);
+   }
+
+   virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override
+   {
+      return sourceModel()->removeRows(row, count, parent);
+   }
+
+   virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
+   {
+      return sourceModel()->setData(index, value, role);
+   }
+
+   virtual bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override
+   {
+      return sourceModel()->setHeaderData(section, orientation, value, role);
+   }
+
+   virtual bool setItemData(const QModelIndex &index, const QMap<int, QVariant> &roles) override
+   {
+      return sourceModel()->setItemData(index, roles);
+   }
+
+   virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override
+   {
+      return sourceModel()->sort(column, order);
+   }
+
+   virtual QSize span(const QModelIndex &index) const override
+   {
+      return sourceModel()->span(index);
+   }
+
+   virtual Qt::DropActions supportedDropActions() const override
+   {
+      return sourceModel()->supportedDropActions();
+   }
+
+   virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override
+   {
+      return sourceModel()->columnCount(parent);
+   }
+
+   virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override
+   {
+      return sourceModel()->data(index, role);
+   }
+
+   virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
+   {
+      return sourceModel()->index(row, column, parent);
+   }
+
+   virtual QModelIndex parent(const QModelIndex & index) const override
+   {
+      return sourceModel()->parent(index);
+   }
+
+   virtual int rowCount(const QModelIndex & parent = QModelIndex()) const override
+   {
+      return sourceModel()->rowCount(parent);
+   }
+
+    virtual QModelIndex	mapFromSource(const QModelIndex &sourceIndex) const override
+    {
+       const QAbstractProxyModel *origin = this;
+       QModelIndex result = sourceIndex;
+
+       while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
+          result = origin->mapFromSource(result);
+
+       return result;
+    }
+
+    virtual QModelIndex	mapToSource(const QModelIndex &proxyIndex) const override
+    {
+       const QAbstractProxyModel *origin = this;
+       QModelIndex result = proxyIndex;
+
+       while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
+          result = origin->mapToSource(result);
+
+       return result;
+    }
+
+    virtual void setSourceModel(QAbstractItemModel *newSourceModel) override
+    {
+       beginResetModel();
+
+       if (sourceModel()) {
+          disconnect(sourceModel(), SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)),
+             this, SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(rowsInserted(QModelIndex, int, int)),
+             this, SIGNAL(rowsInserted(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
+             this, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
+             this, SIGNAL(rowsRemoved(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)),
+             this, SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
+          disconnect(sourceModel(), SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)),
+             this, SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)));
+          disconnect(sourceModel(), SIGNAL(columnsAboutToBeInserted(QModelIndex, int, int)),
+             this, SIGNAL(columnsAboutToBeInserted(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(columnsInserted(QModelIndex, int, int)),
+             this, SIGNAL(columnsInserted(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(columnsAboutToBeRemoved(QModelIndex, int, int)),
+             this, SIGNAL(columnsAboutToBeRemoved(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(columnsRemoved(QModelIndex, int, int)),
+             this, SIGNAL(columnsRemoved(QModelIndex, int, int)));
+          disconnect(sourceModel(), SIGNAL(columnsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)),
+             this, SIGNAL(columnsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
+          disconnect(sourceModel(), SIGNAL(columnsMoved(QModelIndex, int, int, QModelIndex, int)),
+             this, SIGNAL(columnsMoved(QModelIndex, int, int, QModelIndex, int)));
+          disconnect(sourceModel(), SIGNAL(modelAboutToBeReset()),
+             this, SIGNAL(modelAboutToBeReset()));
+          disconnect(sourceModel(), SIGNAL(modelReset()),
+             this, SIGNAL(modelReset()));
+          disconnect(sourceModel(), SIGNAL(dataChanged(QModelIndex, QModelIndex, QVector<int>)),
+             this, SIGNAL(dataChanged(QModelIndex, QModelIndex, QVector<int>)));
+          disconnect(sourceModel(), SIGNAL(headerDataChanged(Qt::Orientation, int, int)),
+             this, SIGNAL(headerDataChanged(Qt::Orientation, int, int)));
+          disconnect(sourceModel(), SIGNAL(layoutAboutToBeChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)),
+             this, SIGNAL(layoutAboutToBeChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)));
+          disconnect(sourceModel(), SIGNAL(layoutChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)),
+             this, SIGNAL(layoutChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)));
+       }
+
+       QAbstractProxyModel::setSourceModel(newSourceModel);
+
+       if (sourceModel()) {
+          connect(sourceModel(), SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)),
+             SIGNAL(rowsAboutToBeInserted(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(rowsInserted(QModelIndex, int, int)),
+             SIGNAL(rowsInserted(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
+             SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
+             SIGNAL(rowsRemoved(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)),
+             SIGNAL(rowsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
+          connect(sourceModel(), SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)),
+             SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)));
+          connect(sourceModel(), SIGNAL(columnsAboutToBeInserted(QModelIndex, int, int)),
+             SIGNAL(columnsAboutToBeInserted(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(columnsInserted(QModelIndex, int, int)),
+             SIGNAL(columnsInserted(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(columnsAboutToBeRemoved(QModelIndex, int, int)),
+             SIGNAL(columnsAboutToBeRemoved(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(columnsRemoved(QModelIndex, int, int)),
+             SIGNAL(columnsRemoved(QModelIndex, int, int)));
+          connect(sourceModel(), SIGNAL(columnsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)),
+             SIGNAL(columnsAboutToBeMoved(QModelIndex, int, int, QModelIndex, int)));
+          connect(sourceModel(), SIGNAL(columnsMoved(QModelIndex, int, int, QModelIndex, int)),
+             SIGNAL(columnsMoved(QModelIndex, int, int, QModelIndex, int)));
+          connect(sourceModel(), SIGNAL(modelAboutToBeReset()),
+             SIGNAL(modelAboutToBeReset()));
+          connect(sourceModel(), SIGNAL(modelReset()),
+             SIGNAL(modelReset()));
+          connect(sourceModel(), SIGNAL(dataChanged(QModelIndex, QModelIndex, QVector<int>)),
+             SIGNAL(dataChanged(QModelIndex, QModelIndex, QVector<int>)));
+          connect(sourceModel(), SIGNAL(headerDataChanged(Qt::Orientation, int, int)),
+             SIGNAL(headerDataChanged(Qt::Orientation, int, int)));
+          connect(sourceModel(), SIGNAL(layoutAboutToBeChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)),
+             SIGNAL(layoutAboutToBeChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)));
+          connect(sourceModel(), SIGNAL(layoutChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)),
+             SIGNAL(layoutChanged(QList<QPersistentModelIndex>, QAbstractItemModel::LayoutChangeHint)));
+       }
+
+       endResetModel();
+    }
+};
+
 class ModelBuilderCommon final
 {
 public:
@@ -169,6 +420,13 @@ public:
         return embeddNewModel(new AlternateRowShadingModelDecorator(colorA, colorB, m_parent));
     }
 
+    ModelBuilderCommon &withSortAndFilter(std::function<void(QSortFilterProxyModel*)> handler)
+    {
+       auto sortFilterModel = new QSortFilterProxyModel(m_parent);
+       handler(sortFilterModel);
+       return embeddNewModel(sortFilterModel);
+    }
+
     ModelBuilderCommon &withCheckboxMultiMark(
         int column,
         CheckboxMultiMarkModelDecorator::UpdateCheckStateHandler updateHandler,
@@ -196,8 +454,10 @@ public:
         return embeddNewModel(new CheckboxMultiMarkModelDecorator(column, updateHandler, checkHandler, m_parent));
     }
 
-    QAbstractItemModel *build() {
-        return m_base;
+    QAbstractProxyModel *build() {
+        auto wrapper = new SourceMappingModelDecorator(m_parent);
+        wrapper->setSourceModel(m_base);
+        return wrapper;
     }
 
 private:

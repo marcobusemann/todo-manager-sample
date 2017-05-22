@@ -7,8 +7,6 @@
 
 #include <mvvm/lineeditbinding.h>
 
-#include <QSortFilterProxyModel>
-
 PersonsView::PersonsView(
     const QSharedPointer<PersonsViewModel> &viewModel,
     QWidget *parent)
@@ -19,7 +17,7 @@ PersonsView::PersonsView(
 {
     m_ui->setupUi(this);
 
-    auto personsItemModel = ModelBuilder::AModelFor(m_viewModel->getPersons(), this)
+    m_model = ModelBuilder::AModelFor(m_viewModel->getPersons(), this)
         .withColumns(2)
         .withData(Qt::DisplayRole, [](const QModelIndex &index, int role) -> QVariant {
             auto person = index.data(Qt::UserRole).value<Person::Ptr>();
@@ -41,16 +39,15 @@ PersonsView::PersonsView(
             }
             return result;
         })
+        //.withSortAndFilter([&](auto model) {
+        //   model->setFilterCaseSensitivity(Qt::CaseInsensitive);
+        //   model->setFilterKeyColumn(-1);
+        //   connect(m_ui->editSearch, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
+        //})
         .build();
 
-    // TODO: To this using the model builder
-    m_sortFilterModel = new QSortFilterProxyModel(this);
-    m_sortFilterModel->setSourceModel(personsItemModel);
-    m_sortFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_sortFilterModel->setFilterKeyColumn(-1);
-    connect(m_ui->editSearch, &QLineEdit::textChanged, m_sortFilterModel, &QSortFilterProxyModel::setFilterWildcard);
+    m_ui->personsItemView->setModel(m_model);
 
-    m_ui->personsItemView->setModel(m_sortFilterModel);
     connect(m_ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
 
     LineEditBinding::factory(m_ui->editNewPersonName, m_viewModel, "newPersonName");
@@ -75,7 +72,7 @@ void PersonsView::updateSelection()
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     auto items = QList<QPersistentModelIndex>();
     for (auto index : indexes) {
-        items.append(m_sortFilterModel->mapToSource(index));
+        items.append(m_model->mapToSource(index));
     }
     m_viewModel->updateSelection(items);
 }

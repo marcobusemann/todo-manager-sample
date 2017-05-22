@@ -58,6 +58,10 @@ public:
     }
 };
 
+#include <moderngrids\modelbuilder.h>
+#include <QSortFilterProxyModel>
+#include <QStandardItemModel>
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -71,5 +75,33 @@ int main(int argc, char *argv[])
     MainWindow w(sessionFactory);
     w.show();
 
+    /*
+    auto sourceModel = new QStandardItemModel();
+
+    QStandardItem *item1 = new QStandardItem("Test");
+    sourceModel->appendRow(item1);
+
+    QStandardItem *item2 = new QStandardItem("Test2");
+    sourceModel->appendRow(item2);
+
+    auto sortModel = new QSortFilterProxyModel();
+    sortModel->setSourceModel(sourceModel);
+
+    auto outerModel = new SourceMappingModelDecorator();
+    outerModel->setSourceModel(sortModel);
+    outerModel->flags(QModelIndex());
+
+    auto valueItem1_1 = outerModel->index(0, 0).data(Qt::DisplayRole).toString().toStdString();
+    auto valueItem2_1 = outerModel->index(1, 0).data(Qt::DisplayRole).toString().toStdString();
+
+    sortModel->sort(0, Qt::DescendingOrder);
+
+    auto indexValueItem1_2 = outerModel->index(0, 0);
+    auto valueItem1_2 = indexValueItem1_2.data(Qt::DisplayRole).toString().toStdString();
+    auto valueItem2_2 = outerModel->index(1, 0).data(Qt::DisplayRole).toString().toStdString();
+
+    auto mappedindexValueItem1_2 = outerModel->mapToSource(indexValueItem1_2);
+    auto mappedValueItem2 = mappedindexValueItem1_2.data(Qt::DisplayRole).toString().toStdString();
+    */
     return a.exec();
 }
