@@ -39,11 +39,11 @@ PersonsView::PersonsView(
             }
             return result;
         })
-        //.withSortAndFilter([&](auto model) {
-        //   model->setFilterCaseSensitivity(Qt::CaseInsensitive);
-        //   model->setFilterKeyColumn(-1);
-        //   connect(m_ui->editSearch, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
-        //})
+        .withSortAndFilter([&](auto model) {
+           model->setFilterCaseSensitivity(Qt::CaseInsensitive);
+           model->setFilterKeyColumn(-1);
+           connect(m_ui->editSearch, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
+        })
         .build();
 
     m_ui->personsItemView->setModel(m_model);
@@ -72,7 +72,7 @@ void PersonsView::updateSelection()
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     auto items = QList<QPersistentModelIndex>();
     for (auto index : indexes) {
-        items.append(m_model->mapToSource(index));
+        items.append(m_model->mapToRoot(index));
     }
     m_viewModel->updateSelection(items);
 }

@@ -6,15 +6,12 @@
 
 #include "moderngrids\modelbuilder.h"
 
-#include <qsortfilterproxymodel.h>
-
 TodosView::TodosView(
     const QSharedPointer<TodosViewModel> &viewModel, 
     QWidget *parent)
     : QWidget(parent)
     , m_viewModel(viewModel)
     , m_ui(new Ui::TodosView())
-    , m_sortFilterItemModel(new QSortFilterProxyModel(this))
     , m_firstShow(true)
 {
     m_ui->setupUi(this);
@@ -27,7 +24,7 @@ TodosView::TodosView(
     m_ui->todosItemView->addAction(m_viewModel->getActionEdit());
     m_ui->todosItemView->addAction(m_viewModel->getActionRemove());
 
-    auto itemModel = ModelBuilder::AModelFor(m_viewModel->getTodos(), this)
+	m_model = ModelBuilder::AModelFor(m_viewModel->getTodos(), this)
        .withColumns(2)
        .withHorizontalHeaderData([&](int section, int role) -> QVariant {
           QVariant result;
@@ -64,13 +61,13 @@ TodosView::TodosView(
           }
 
           return result;
-       }).build();
+       })
+	   .withSortAndFilter([&](auto model) {
+		   model->setFilterCaseSensitivity(Qt::CaseInsensitive);
+		   connect(m_ui->editFind, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
+	   }).build();
 
-    m_sortFilterItemModel->setSourceModel(itemModel);
-    m_sortFilterItemModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    connect(m_ui->editFind, &QLineEdit::textChanged, m_sortFilterItemModel, &QSortFilterProxyModel::setFilterWildcard);
-
-    m_ui->todosItemView->setModel(m_sortFilterItemModel);
+    m_ui->todosItemView->setModel(m_model);
     connect(m_ui->todosItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TodosView::updateSelection);
 }
 
@@ -88,7 +85,7 @@ void TodosView::updateSelection()
     auto mappedIndexes = QList<QModelIndex>();
 
     for (auto &index : indexes)
-       mappedIndexes.append(QPersistentModelIndex(index));
+       mappedIndexes.append(m_model->mapToRoot(index));
 
     m_viewModel->updateSelection(mappedIndexes);
 }

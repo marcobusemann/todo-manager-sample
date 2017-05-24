@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 #include <QWidget>
 
-class QAbstractProxyModel;
+class SourceMappingModelDecorator;
 class PersonsViewModel;
 
 namespace Ui {
@@ -25,7 +25,7 @@ public:
 private:
     QSharedPointer<PersonsViewModel> m_viewModel;
     QScopedPointer<Ui::PersonsView> m_ui;
-    QAbstractProxyModel *m_model;
+    SourceMappingModelDecorator *m_model;
 
     bool m_firstShow;
 
