@@ -100,7 +100,9 @@ set(source-moderngrids
     src/moderngrids/decorators/checkboxmultimarkmodeldecorator.cpp
     src/moderngrids/decorators/alternaterowshadingmodeldecorator.h
     src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp
-	src/moderngrids/qeventhandler.h)
+	src/moderngrids/qeventhandler.h
+	src/moderngrids/proxymodelutils.h
+	src/moderngrids/proxymodelutils.cpp)
 source_group("moderngrids" FILES ${source-moderngrids})
 
 set(src 

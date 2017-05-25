@@ -5,6 +5,7 @@
 #include <QPair>
 
 #include <functional>
+
 /*
 class Scope
 {

@@ -3,7 +3,8 @@
 
 #include <viewmodels/personsviewmodel.h>
 
-#include <moderngrids\modelbuilder.h>
+#include <moderngrids/modelbuilder.h>
+#include "moderngrids/proxymodelutils.h"
 
 #include <mvvm/lineeditbinding.h>
 

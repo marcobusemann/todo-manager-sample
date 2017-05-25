@@ -2,9 +2,10 @@
 #include "viewmodels/todosviewmodel.h"
 #include "ui_todosview.h"
 
-#include "mvvm\lineeditbinding.h"
+#include "mvvm/lineeditbinding.h"
 
-#include "moderngrids\modelbuilder.h"
+#include "moderngrids/modelbuilder.h"
+#include "moderngrids/proxymodelutils.h"
 
 TodosView::TodosView(
     const QSharedPointer<TodosViewModel> &viewModel, 
