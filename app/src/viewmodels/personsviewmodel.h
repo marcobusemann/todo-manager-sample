@@ -5,7 +5,7 @@
 #include <dal/personrepository.h>
 #include <data/person.h>
 
-#include <moderngrids/qobservablelist.h>
+#include <moderngrids/qmgobservablelist.h>
 
 class QAction;
 
@@ -22,7 +22,7 @@ public:
     PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent = nullptr);
     void initialize();
 
-    QObservableList<Person::Ptr> &getPersons();
+    QmgObservableList<Person::Ptr> &getPersons();
 
     QAction *getActionAdd() const;
     QAction *getActionEdit() const;
@@ -39,7 +39,7 @@ private:
     PersonRepository::Ptr m_personRepository;
 
     QList<QPersistentModelIndex> m_selectedPersons;
-    QObservableList<Person::Ptr> m_persons;
+	QmgObservableList<Person::Ptr> m_persons;
     QString m_newPersonName;
 
     QAction *m_actionAdd;

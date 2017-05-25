@@ -3,8 +3,8 @@
 
 #include <viewmodels/personsviewmodel.h>
 
-#include <moderngrids/modelbuilder.h>
-#include "moderngrids/proxymodelutils.h"
+#include <moderngrids/builders/qmgmodelbuilder.h>
+#include "moderngrids/qmgproxymodelutils.h"
 
 #include <mvvm/lineeditbinding.h>
 
@@ -18,7 +18,7 @@ PersonsView::PersonsView(
 {
     m_ui->setupUi(this);
 
-    m_model = ModelBuilder::AModelFor(m_viewModel->getPersons(), this)
+    m_model = QmgModelBuilder::AModelFor(m_viewModel->getPersons(), this)
         .withColumns(2)
         .withData(Qt::DisplayRole, [](const QModelIndex &index, int role) -> QVariant {
             auto person = index.data(Qt::UserRole).value<Person::Ptr>();
@@ -73,7 +73,7 @@ void PersonsView::updateSelection()
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     auto items = QList<QPersistentModelIndex>();
     for (auto index : indexes) {
-        items.append(ProxyModelUtils::mapToRoot(m_model, index));
+        items.append(QmgProxyModelUtils::mapToRoot(m_model, index));
     }
     m_viewModel->updateSelection(items);
 }

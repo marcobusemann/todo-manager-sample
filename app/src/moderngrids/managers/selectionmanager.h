@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../observableset.h"
+//#include "../observableset.h"
 
 #include <QItemSelectionModel>
 #include <QAbstractItemView>
@@ -28,11 +28,12 @@ public:
 
     void setObservableMultiMarkItems(const std::shared_ptr<ObservableSet<T>> &items)
     {
-        m_multiMarkItems = items;
+        //m_multiMarkItems = items;
     }
 
     QSet<T> getSelectedItems(bool considerMultiMark) const
     {
+		/*
         QSet<T> result;
         if (considerMultiMark && m_multiMarkItems)
             result = m_multiMarkItems->toSet();
@@ -43,9 +44,10 @@ public:
                 result.insert(idx.data(Qt::UserRole).value<T>());
         }
         return result;
+		*/
     }
 
 private:
-    std::shared_ptr<ObservableSet<T>> m_multiMarkItems;
+    //std::shared_ptr<ObservableSet<T>> m_multiMarkItems;
     QItemSelectionModel *m_viewSelectionModel;
 };

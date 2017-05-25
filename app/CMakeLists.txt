@@ -71,38 +71,50 @@ set(source-mvvm
 source_group("mvvm" FILES ${source-mvvm})
 
 set(source-moderngrids
-    src/moderngrids/modelbuilder.h
-    src/moderngrids/modelbuilder.cpp
-    src/moderngrids/modellogger.h
-    src/moderngrids/modellogger.cpp
-    src/moderngrids/qobservablelist.h
-    src/moderngrids/observableset.h
-    src/moderngrids/observablevariantlistmodel.cpp
-    src/moderngrids/observablevariantlistmodel.h
-    src/moderngrids/qobservablevariantlistproxy.h
+    src/moderngrids/qmgmodellogger.h
+    src/moderngrids/qmgmodellogger.cpp
+    src/moderngrids/qmgobservablelist.h
+    src/moderngrids/qmgobservablevariantlistmodel.cpp
+    src/moderngrids/qmgobservablevariantlistmodel.h
+    src/moderngrids/qmgobservablevariantlistproxy.h
     src/moderngrids/viewbuilder.cpp
     src/moderngrids/viewbuilder.h
+	src/moderngrids/qmgeventhandler.h
+	src/moderngrids/qmgproxymodelutils.h
+	src/moderngrids/qmgproxymodelutils.cpp
     src/moderngrids/managers/checkboxmultimarkviewmanager.h
     src/moderngrids/managers/checkboxmultimarkviewmanager.cpp
     src/moderngrids/managers/selectionmanager.h
     src/moderngrids/managers/selectionmanager.cpp
-    src/moderngrids/decorators/objectdatamodeldecorator.h
-    src/moderngrids/decorators/objectdatamodeldecorator.cpp
-    src/moderngrids/decorators/headerdatamodeldecorator.h
-    src/moderngrids/decorators/headerdatamodeldecorator.cpp
-    src/moderngrids/decorators/fetchmoredecorator.h
-    src/moderngrids/decorators/fetchmoredecorator.cpp
-    src/moderngrids/decorators/datamodeldecorator.h
-    src/moderngrids/decorators/datamodeldecorator.cpp
-    src/moderngrids/decorators/columnmodeldecorator.h
-    src/moderngrids/decorators/columnmodeldecorator.cpp
-    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.h
-    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.cpp
-    src/moderngrids/decorators/alternaterowshadingmodeldecorator.h
-    src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp
-	src/moderngrids/qeventhandler.h
-	src/moderngrids/proxymodelutils.h
-	src/moderngrids/proxymodelutils.cpp)
+    src/moderngrids/decorators/qmgobjectdatamodeldecorator.h
+    src/moderngrids/decorators/qmgobjectdatamodeldecorator.cpp
+    src/moderngrids/decorators/qmgheaderdatamodeldecorator.h
+    src/moderngrids/decorators/qmgheaderdatamodeldecorator.cpp
+    src/moderngrids/decorators/qmgfetchmoredecorator.h
+    src/moderngrids/decorators/qmgfetchmoredecorator.cpp
+    src/moderngrids/decorators/qmgdatamodeldecorator.h
+    src/moderngrids/decorators/qmgdatamodeldecorator.cpp
+    src/moderngrids/decorators/qmgcolumnmodeldecorator.h
+    src/moderngrids/decorators/qmgcolumnmodeldecorator.cpp
+    src/moderngrids/decorators/qmgcheckboxmultimarkmodeldecorator.h
+    src/moderngrids/decorators/qmgcheckboxmultimarkmodeldecorator.cpp
+    src/moderngrids/decorators/qmgalternaterowshadingmodeldecorator.h
+    src/moderngrids/decorators/qmgalternaterowshadingmodeldecorator.cpp
+	src/moderngrids/builders/qmgheaderdatamodelbuilder.h
+	src/moderngrids/builders/qmgheaderdatamodelbuilder.cpp
+	src/moderngrids/builders/qmgcommonmodelbuilder.h
+	src/moderngrids/builders/qmgcommonmodelbuilder.cpp
+	src/moderngrids/builders/qmgdatamodelbuilder.h
+	src/moderngrids/builders/qmgdatamodelbuilder.cpp
+	src/moderngrids/builders/qmgsourcemodelbuilder.h
+	src/moderngrids/builders/qmgsourcemodelbuilder.cpp	
+	src/moderngrids/builders/qmgmodelbuilder.h
+	src/moderngrids/builders/qmgmodelbuilder.cpp	
+	src/moderngrids/builders/qmgcolumnmodelbuilder.h
+	src/moderngrids/builders/qmgcolumnmodelbuilder.cpp	
+	src/moderngrids/builders/qmgcolumncollectionbuilder.h
+	src/moderngrids/builders/qmgcolumncollectionbuilder.cpp	
+	)
 source_group("moderngrids" FILES ${source-moderngrids})
 
 set(src 

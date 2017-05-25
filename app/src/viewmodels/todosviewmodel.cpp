@@ -42,7 +42,7 @@ TodosViewModel::TodosViewModel(
 
 void TodosViewModel::initialize()
 {
-    m_todos = QObservableList<Todo::Ptr>::fromList(m_todoRepository->getAll());
+    m_todos = QmgObservableList<Todo::Ptr>::fromList(m_todoRepository->getAll());
 }
 
 QAction *TodosViewModel::getActionAdd() const

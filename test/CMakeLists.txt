@@ -1,7 +1,7 @@
-add_subdirectory(QObservableListTest)
-add_subdirectory(QEventHandlerTest)
-add_subdirectory(QObservableVariantListProxyTest)
+add_subdirectory(QmgObservableListTest)
+add_subdirectory(QmgEventHandlerTest)
+add_subdirectory(QmgObservableVariantListProxyTest)
 
-set_property(TARGET QObservableListTest PROPERTY FOLDER "tests")
-set_property(TARGET QEventHandlerTest PROPERTY FOLDER "tests")
-set_property(TARGET QObservableVariantListProxyTest PROPERTY FOLDER "tests")
+set_property(TARGET QmgObservableListTest PROPERTY FOLDER "tests")
+set_property(TARGET QmgEventHandlerTest PROPERTY FOLDER "tests")
+set_property(TARGET QmgObservableVariantListProxyTest PROPERTY FOLDER "tests")

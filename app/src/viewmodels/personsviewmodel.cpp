@@ -19,7 +19,7 @@ QSharedPointer<PersonsViewModel> PersonsViewModel::factory(const PersonRepositor
 PersonsViewModel::PersonsViewModel(const PersonRepository::Ptr &personRepository, QObject *parent)
     : QObject(parent)
     , m_personRepository(personRepository)
-    , m_persons(QObservableList<Person::Ptr>::empty())
+    , m_persons(QmgObservableList<Person::Ptr>::empty())
     , m_actionAdd(new QAction(this))
     , m_actionEdit(new QAction(this))
     , m_actionRemove(new QAction(this))
@@ -38,10 +38,10 @@ PersonsViewModel::PersonsViewModel(const PersonRepository::Ptr &personRepository
 
 void PersonsViewModel::initialize()
 {
-    m_persons = QObservableList<Person::Ptr>::fromList(m_personRepository->getAll());
+    m_persons = QmgObservableList<Person::Ptr>::fromList(m_personRepository->getAll());
 }
 
-QObservableList<Person::Ptr> &PersonsViewModel::getPersons()
+QmgObservableList<Person::Ptr> &PersonsViewModel::getPersons()
 {
     return m_persons;
 }

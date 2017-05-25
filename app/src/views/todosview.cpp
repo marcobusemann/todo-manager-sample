@@ -4,8 +4,8 @@
 
 #include "mvvm/lineeditbinding.h"
 
-#include "moderngrids/modelbuilder.h"
-#include "moderngrids/proxymodelutils.h"
+#include "moderngrids/builders/qmgmodelbuilder.h"
+#include "moderngrids/qmgproxymodelutils.h"
 
 TodosView::TodosView(
     const QSharedPointer<TodosViewModel> &viewModel, 
@@ -25,7 +25,7 @@ TodosView::TodosView(
     m_ui->todosItemView->addAction(m_viewModel->getActionEdit());
     m_ui->todosItemView->addAction(m_viewModel->getActionRemove());
 
-	m_model = ModelBuilder::AModelFor(m_viewModel->getTodos(), this)
+	m_model = QmgModelBuilder::AModelFor(m_viewModel->getTodos(), this)
        .withColumns(2)
        .withHorizontalHeaderData([&](int section, int role) -> QVariant {
           QVariant result;
@@ -86,7 +86,7 @@ void TodosView::updateSelection()
     auto mappedIndexes = QList<QModelIndex>();
 
     for (auto &index : indexes)
-       mappedIndexes.append(ProxyModelUtils::mapToRoot(m_model, index));
+       mappedIndexes.append(QmgProxyModelUtils::mapToRoot(m_model, index));
 
     m_viewModel->updateSelection(mappedIndexes);
 }
