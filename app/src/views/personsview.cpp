@@ -72,7 +72,7 @@ void PersonsView::updateSelection()
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     auto items = QList<QPersistentModelIndex>();
     for (auto index : indexes) {
-        items.append(m_model->mapToRoot(index));
+        items.append(ProxyModelUtils::mapToRoot(m_model, index));
     }
     m_viewModel->updateSelection(items);
 }

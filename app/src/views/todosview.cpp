@@ -85,7 +85,7 @@ void TodosView::updateSelection()
     auto mappedIndexes = QList<QModelIndex>();
 
     for (auto &index : indexes)
-       mappedIndexes.append(m_model->mapToRoot(index));
+       mappedIndexes.append(ProxyModelUtils::mapToRoot(m_model, index));
 
     m_viewModel->updateSelection(mappedIndexes);
 }

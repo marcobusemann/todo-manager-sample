@@ -99,37 +99,30 @@ private:
     QAbstractItemModel *m_base;
 };
 
-/*!
-   This decorator implements mapFromSource and mapToSource to map to the root model instead of the next source.
-*/
-class SourceMappingModelDecorator : public QIdentityProxyModel
+class ProxyModelUtils
 {
-public: 
-   SourceMappingModelDecorator(QObject *parent)
-      : QIdentityProxyModel(parent)
-   {}
+public:
+	static QModelIndex mapFromRoot(QAbstractProxyModel *model, const QModelIndex &rootIndex)
+	{
+		const QAbstractProxyModel *origin = model;
+		QModelIndex result = model->mapFromSource(rootIndex);
 
-    virtual QModelIndex	mapFromRoot(const QModelIndex &rootIndex) const
-    {
-       const QAbstractProxyModel *origin = this;
-       QModelIndex result = mapFromSource(rootIndex);
+		while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
+			result = origin->mapFromSource(result);
 
-       while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
-          result = origin->mapFromSource(result);
+		return result;
+	}
 
-       return result;
-    }
+	static QModelIndex	mapToRoot(QAbstractProxyModel *model, const QModelIndex &proxyIndex)
+	{
+		const QAbstractProxyModel *origin = model;
+		QModelIndex result = model->mapToSource(proxyIndex);
 
-    virtual QModelIndex	mapToRoot(const QModelIndex &proxyIndex) const
-    {
-       const QAbstractProxyModel *origin = this;
-       QModelIndex result = mapToSource(proxyIndex);
+		while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
+			result = origin->mapToSource(result);
 
-       while ((origin = dynamic_cast<QAbstractProxyModel*>(origin->sourceModel())) != nullptr)
-          result = origin->mapToSource(result);
-
-       return result;
-    }
+		return result;
+	}
 };
 
 class ModelBuilderCommon final
@@ -237,10 +230,10 @@ public:
         return embeddNewModel(new CheckboxMultiMarkModelDecorator(column, updateHandler, checkHandler, m_parent));
     }
 
-	SourceMappingModelDecorator *build() {
-        auto wrapper = new SourceMappingModelDecorator(m_parent);
-        wrapper->setSourceModel(m_base);
-        return wrapper;
+	QAbstractProxyModel *build() {
+		auto result = new QIdentityProxyModel(m_parent);
+		result->setSourceModel(m_base);
+		return result;
     }
 
 private:
