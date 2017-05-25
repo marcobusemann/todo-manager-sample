@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QSharedPointer>
+#include <QMetaProperty>
 
 #include "qmgcolumnmodelbuilder.h"
 
@@ -29,7 +30,7 @@ public:
 
 			QString propertyName = QString("%1").arg(metaProperty.name());
 
-			auto builder = ColumnModelBuilder::AProperty<TListType>(propertyName, parent)
+			auto builder = QmgColumnModelBuilder::AProperty<TListType>(propertyName, parent)
 				.withHeader(propertyName);
 
 			result->addProperty(propertyName, builder);

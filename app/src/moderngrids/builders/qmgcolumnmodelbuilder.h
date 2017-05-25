@@ -5,6 +5,8 @@
 
 #include <functional>
 
+#include "../decorators/qmgobjectdatamodeldecorator.h"
+
 class QmgColumnModelBuilder {
 public:
 	typedef std::function<QIdentityProxyModel*(int)> ModelFactory;

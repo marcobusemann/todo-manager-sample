@@ -5,6 +5,7 @@
 #include "mvvm/lineeditbinding.h"
 
 #include "moderngrids/builders/qmgmodelbuilder.h"
+#include "moderngrids/builders/qmgcolumncollectionbuilder.h"
 #include "moderngrids/qmgproxymodelutils.h"
 
 TodosView::TodosView(
@@ -25,48 +26,24 @@ TodosView::TodosView(
     m_ui->todosItemView->addAction(m_viewModel->getActionEdit());
     m_ui->todosItemView->addAction(m_viewModel->getActionRemove());
 
+	auto columns = QList<QmgColumnModelBuilder>();
+	columns.append(QmgColumnModelBuilder::AProperty<Todo::Ptr>("title", this)
+		.withHeader(tr("Title")));
+	columns.append(QmgColumnModelBuilder::AProperty<Todo::Ptr>("endDate", this)
+		.withHeader(tr("End date")));
+
 	m_model = QmgModelBuilder::AModelFor(m_viewModel->getTodos(), this)
-       .withColumns(2)
-       .withHorizontalHeaderData([&](int section, int role) -> QVariant {
-          QVariant result;
-
-          if (!role == Qt::DisplayRole) 
-             return result;
-
-          switch (section) {
-          case 0:
-             result = tr("Title");
-             break;
-          case 1:
-             result = tr("End date");
-             break;
-          }
-          return result;
-       })
-       .withData([](const QModelIndex &index, int role, std::function<QVariant()> defaultValue) -> QVariant {
-          auto item = index.data(Qt::UserRole).value<Todo::Ptr>();
-          QVariant result = defaultValue();
-
-          if (role == Qt::DisplayRole) {
-             switch (index.column()) {
-             case 0:
-                result = item->getTitle();
-                break;
-             case 1:
-                result = item->getEndDate();
-                break;
-             }
-          }
-          else if (role == Qt::ForegroundRole) {
-             result = item->isCompleted() ? QColor(Qt::gray) : QColor(Qt::black);
-          }
-
-          return result;
-       })
-	   .withSortAndFilter([&](auto model) {
-		   model->setFilterCaseSensitivity(Qt::CaseInsensitive);
-		   connect(m_ui->editFind, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
-	   }).build();
+		.withColumns(columns)
+		// TODO: Add convenient function like withConditionalData() and withConditionalConstData()
+		.withData(Qt::ForegroundRole, [](const QModelIndex &index, int role, std::function<QVariant()> defaultValue) -> QVariant {
+			auto item = index.data(Qt::UserRole).value<Todo::Ptr>();
+			return item->isCompleted() ? QColor(Qt::gray) : QVariant();
+		})
+		.withSortAndFilter([&](auto model) {
+			model->setFilterCaseSensitivity(Qt::CaseInsensitive);
+			connect(m_ui->editFind, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
+		})
+		.build();
 
     m_ui->todosItemView->setModel(m_model);
     connect(m_ui->todosItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TodosView::updateSelection);

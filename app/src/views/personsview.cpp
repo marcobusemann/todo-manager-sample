@@ -18,28 +18,14 @@ PersonsView::PersonsView(
 {
     m_ui->setupUi(this);
 
+	auto columns = QList<QmgColumnModelBuilder>();
+	columns.append(QmgColumnModelBuilder::AProperty<Person::Ptr>("surname", this)
+		.withHeader(tr("Surname")));
+	columns.append(QmgColumnModelBuilder::AProperty<Person::Ptr>("name", this)
+		.withHeader(tr("Name")));
+
     m_model = QmgModelBuilder::AModelFor(m_viewModel->getPersons(), this)
-        .withColumns(2)
-        .withData(Qt::DisplayRole, [](const QModelIndex &index, int role) -> QVariant {
-            auto person = index.data(Qt::UserRole).value<Person::Ptr>();
-            QVariant result;
-            if (index.column() == 0)
-                result = person->getSurname();
-            else if (index.column() == 1)
-                result = person->getName();
-            return result;
-        })
-        .withHorizontalHeaderData([](int column, int role) -> QVariant {
-            QVariant result;
-            if (role == Qt::DisplayRole)
-            {
-                if (column == 0)
-                    result = tr("Surname");
-                else if (column == 1)
-                    result = tr("Name");
-            }
-            return result;
-        })
+        .withColumns(columns)
         .withSortAndFilter([&](auto model) {
            model->setFilterCaseSensitivity(Qt::CaseInsensitive);
            model->setFilterKeyColumn(-1);

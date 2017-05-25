@@ -15,7 +15,7 @@ public:
     template <class T>
     static QmgObjectDataModelDecorator *ofType(std::function<QVariant(int, const T &)> handler, QObject *parent)
     {
-        auto adapterHandler = [handler](const QModelIndex &index, int) -> QVariant {
+        auto adapterHandler = [handler](const QModelIndex &index, int role) -> QVariant {
             auto item = index.data(Qt::UserRole).value<T>();
             return handler(index.column(), item);
         };

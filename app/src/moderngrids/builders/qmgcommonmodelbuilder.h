@@ -16,7 +16,7 @@ public:
 	QmgCommonModelBuilder(QAbstractItemModel *base, QObject *parent);
 	
 	template <class T>
-	QmgCommonModelBuilder &withObjectData(std::function<QVariant(int, const T &)> handler)
+	QmgCommonModelBuilder &withObjectData(std::function<QVariant(int, int, const T &)> handler)
 	{
 		return embeddNewModel(QmgObjectDataModelDecorator::ofType<T>(handler, m_parent));
 	}
