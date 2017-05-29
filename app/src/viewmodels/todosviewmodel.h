@@ -7,7 +7,7 @@
 #include <dal/personrepository.h>
 #include <data/todo.h>
 
-#include <moderngrids\qmgobservablelist.h>
+#include <QModernGrids/QmgObservableList.h>
 
 class QAction;
 

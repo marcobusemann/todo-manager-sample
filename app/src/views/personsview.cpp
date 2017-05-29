@@ -3,8 +3,8 @@
 
 #include <viewmodels/personsviewmodel.h>
 
-#include <moderngrids/builders/qmgmodelbuilder.h>
-#include "moderngrids/qmgproxymodelutils.h"
+#include <QModernGrids/Builders/QmgModelBuilder.h>
+#include <QModernGrids/QmgProxyModelUtils.h>
 
 #include <mvvm/lineeditbinding.h>
 

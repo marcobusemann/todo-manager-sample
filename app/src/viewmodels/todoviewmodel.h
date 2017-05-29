@@ -5,7 +5,7 @@
 #include <data/todo.h>
 #include <data/person.h>
 
-#include <moderngrids/qmgobservablelist.h>
+#include <QModernGrids/QmgObservableList.h>
 
 #include <QSharedPointer>
 #include <QObject>

@@ -4,9 +4,9 @@
 
 #include "mvvm/lineeditbinding.h"
 
-#include "moderngrids/builders/qmgmodelbuilder.h"
-#include "moderngrids/builders/qmgcolumncollectionbuilder.h"
-#include "moderngrids/qmgproxymodelutils.h"
+#include <QModernGrids/Builders/QmgModelBuilder.h>
+#include <QModernGrids/Builders/QmgColumnCollectionBuilder.h>
+#include <QModernGrids/QmgProxyModelUtils.h>
 
 TodosView::TodosView(
     const QSharedPointer<TodosViewModel> &viewModel, 

@@ -9,7 +9,7 @@
 #include "mvvm/datetimeeditbinding.h"
 #include "mvvm/comboboxbinding.h"
 
-#include "moderngrids/builders/qmgmodelbuilder.h"
+#include <QModernGrids/Builders/QmgModelBuilder.h>
 
 TodoView::TodoView(
     const QSharedPointer<TodoViewModel> &viewModel,

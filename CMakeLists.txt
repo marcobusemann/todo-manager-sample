@@ -13,4 +13,4 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 enable_testing()
 
 add_subdirectory(app)
-add_subdirectory(test)
+#add_subdirectory(test)
