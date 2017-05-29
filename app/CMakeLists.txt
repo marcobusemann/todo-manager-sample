@@ -71,36 +71,12 @@ set(source-mvvm
 source_group("mvvm" FILES ${source-mvvm})
 
 set(source-moderngrids
-    src/moderngrids/modelbuilder.h
-    src/moderngrids/modelbuilder.cpp
-    src/moderngrids/modellogger.h
-    src/moderngrids/modellogger.cpp
-    src/moderngrids/qobservablelist.h
-    src/moderngrids/observableset.h
-    src/moderngrids/observablevariantlistmodel.cpp
-    src/moderngrids/observablevariantlistmodel.h
-    src/moderngrids/qobservablevariantlistproxy.h
     src/moderngrids/viewbuilder.cpp
     src/moderngrids/viewbuilder.h
     src/moderngrids/managers/checkboxmultimarkviewmanager.h
     src/moderngrids/managers/checkboxmultimarkviewmanager.cpp
     src/moderngrids/managers/selectionmanager.h
-    src/moderngrids/managers/selectionmanager.cpp
-    src/moderngrids/decorators/objectdatamodeldecorator.h
-    src/moderngrids/decorators/objectdatamodeldecorator.cpp
-    src/moderngrids/decorators/headerdatamodeldecorator.h
-    src/moderngrids/decorators/headerdatamodeldecorator.cpp
-    src/moderngrids/decorators/fetchmoredecorator.h
-    src/moderngrids/decorators/fetchmoredecorator.cpp
-    src/moderngrids/decorators/datamodeldecorator.h
-    src/moderngrids/decorators/datamodeldecorator.cpp
-    src/moderngrids/decorators/columnmodeldecorator.h
-    src/moderngrids/decorators/columnmodeldecorator.cpp
-    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.h
-    src/moderngrids/decorators/checkboxmultimarkmodeldecorator.cpp
-    src/moderngrids/decorators/alternaterowshadingmodeldecorator.h
-    src/moderngrids/decorators/alternaterowshadingmodeldecorator.cpp
-	src/moderngrids/qeventhandler.h)
+    src/moderngrids/managers/selectionmanager.cpp)
 source_group("moderngrids" FILES ${source-moderngrids})
 
 set(src 
@@ -123,13 +99,16 @@ if(Qt5Core_FOUND AND Qt5Sql_FOUND AND Qt5Widgets_FOUND)
     set (EXTRA_LIBS ${EXTRA_LIBS} Qt5::Core Qt5::Sql Qt5::Widgets)    
 else()
     find_package(Qt4 REQUIRED)
-    set (EXTRA_LIBS ${EXTRA_LIBS} Qt4::Core Qt4::Sql Qt4::Widgets)
+    set (EXTRA_LIBS ${EXTRA_LIBS} Qt4::QtCore Qt4::QtSql Qt4::QtGui)
 endif()
 
 add_subdirectory(ext/QMetaOrm)
 set_property(TARGET QMetaOrm PROPERTY FOLDER "ext")
-
 set(EXTRA_LIBS ${EXTRA_LIBS} QMetaOrm)
+
+add_subdirectory(ext/QModernGrids)
+set_property(TARGET QModernGrids PROPERTY FOLDER "ext")
+set(EXTRA_LIBS ${EXTRA_LIBS} QModernGrids)
 
 add_executable(todo-manager-sample ${src} res/scripts.qrc)
 target_link_libraries(todo-manager-sample ${EXTRA_LIBS})

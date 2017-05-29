@@ -3,11 +3,10 @@
 
 #include <viewmodels/personsviewmodel.h>
 
-#include <moderngrids\modelbuilder.h>
+#include <QModernGrids/Builders/QmgModelBuilder.h>
+#include <QModernGrids/QmgProxyModelUtils.h>
 
 #include <mvvm/lineeditbinding.h>
-
-#include <QSortFilterProxyModel>
 
 PersonsView::PersonsView(
     const QSharedPointer<PersonsViewModel> &viewModel,
@@ -19,38 +18,23 @@ PersonsView::PersonsView(
 {
     m_ui->setupUi(this);
 
-    auto personsItemModel = ModelBuilder::AModelFor(m_viewModel->getPersons(), this)
-        .withColumns(2)
-        .withData(Qt::DisplayRole, [](const QModelIndex &index, int role) -> QVariant {
-            auto person = index.data(Qt::UserRole).value<Person::Ptr>();
-            QVariant result;
-            if (index.column() == 0)
-                result = person->getSurname();
-            else if (index.column() == 1)
-                result = person->getName();
-            return result;
-        })
-        .withHorizontalHeaderData([](int column, int role) -> QVariant {
-            QVariant result;
-            if (role == Qt::DisplayRole)
-            {
-                if (column == 0)
-                    result = tr("Surname");
-                else if (column == 1)
-                    result = tr("Name");
-            }
-            return result;
+	auto columns = QList<QmgColumnModelBuilder>();
+	columns.append(QmgColumnModelBuilder::AProperty<Person::Ptr>("surname", this)
+		.withHeader(tr("Surname")));
+	columns.append(QmgColumnModelBuilder::AProperty<Person::Ptr>("name", this)
+		.withHeader(tr("Name")));
+
+    m_model = QmgModelBuilder::AModelFor(m_viewModel->getPersons(), this)
+        .withColumns(columns)
+        .withSortAndFilter([&](auto model) {
+           model->setFilterCaseSensitivity(Qt::CaseInsensitive);
+           model->setFilterKeyColumn(-1);
+           connect(m_ui->editSearch, &QLineEdit::textChanged, model, &QSortFilterProxyModel::setFilterWildcard);
         })
         .build();
 
-    // TODO: To this using the model builder
-    m_sortFilterModel = new QSortFilterProxyModel(this);
-    m_sortFilterModel->setSourceModel(personsItemModel);
-    m_sortFilterModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_sortFilterModel->setFilterKeyColumn(-1);
-    connect(m_ui->editSearch, &QLineEdit::textChanged, m_sortFilterModel, &QSortFilterProxyModel::setFilterWildcard);
+    m_ui->personsItemView->setModel(m_model);
 
-    m_ui->personsItemView->setModel(m_sortFilterModel);
     connect(m_ui->personsItemView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PersonsView::updateSelection);
 
     LineEditBinding::factory(m_ui->editNewPersonName, m_viewModel, "newPersonName");
@@ -75,7 +59,7 @@ void PersonsView::updateSelection()
     auto indexes = m_ui->personsItemView->selectionModel()->selectedRows();
     auto items = QList<QPersistentModelIndex>();
     for (auto index : indexes) {
-        items.append(m_sortFilterModel->mapToSource(index));
+        items.append(QmgProxyModelUtils::mapToRoot(m_model, index));
     }
     m_viewModel->updateSelection(items);
 }

@@ -7,7 +7,7 @@
 #include <dal/personrepository.h>
 #include <data/todo.h>
 
-#include <moderngrids\qobservablelist.h>
+#include <QModernGrids/QmgObservableList.h>
 
 class QAction;
 
@@ -35,7 +35,7 @@ public:
 
     QString getNewTodoTitle() const { return m_newTodoTitle; }
 
-    QObservableList<Todo::Ptr> &getTodos() { return m_todos; }
+	QmgObservableList<Todo::Ptr> &getTodos() { return m_todos; }
 
 public slots:
     void addTodo(const QString &title);
@@ -47,7 +47,7 @@ private:
     PersonRepository::Ptr m_personRepository;
 
     QList<QPersistentModelIndex> m_selectedTodos;
-    QObservableList<Todo::Ptr> m_todos;
+	QmgObservableList<Todo::Ptr> m_todos;
     QString m_newTodoTitle;
 
     QAction *m_actionAdd;

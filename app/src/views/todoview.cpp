@@ -9,7 +9,7 @@
 #include "mvvm/datetimeeditbinding.h"
 #include "mvvm/comboboxbinding.h"
 
-#include "moderngrids/modelbuilder.h"
+#include <QModernGrids/Builders/QmgModelBuilder.h>
 
 TodoView::TodoView(
     const QSharedPointer<TodoViewModel> &viewModel,
@@ -31,17 +31,17 @@ TodoView::TodoView(
         return index.data(Qt::UserRole).value<Person::Ptr>()->getFullName();
     };
 
-    auto ownerModel = ModelBuilder::AListModelFor(m_viewModel->getAvailableOwners(), this)
+    auto ownerModel = QmgModelBuilder::AListModelFor(m_viewModel->getAvailableOwners(), this)
         .withData(Qt::DisplayRole, personDisplayHandler)
         .build();
     ComboBoxBinding::factory(m_ui->editOwner, ownerModel, m_viewModel->getModel(), "owner");
 
-    auto workerModel = ModelBuilder::AListModelFor(m_viewModel->getAvailableWorkers(), this)
+    auto workerModel = QmgModelBuilder::AListModelFor(m_viewModel->getAvailableWorkers(), this)
         .withData(Qt::DisplayRole, personDisplayHandler)
         .build();
     ComboBoxBinding::factory(m_ui->editNewWorker, workerModel, m_viewModel, "currentNewWorker");
 
-    auto choosenWorkerModel = ModelBuilder::AListModelFor(m_viewModel->getWorkers(), this)
+    auto choosenWorkerModel = QmgModelBuilder::AListModelFor(m_viewModel->getWorkers(), this)
         .withData(Qt::DisplayRole, personDisplayHandler)
         .build();
     m_ui->editWorkers->setModel(choosenWorkerModel);

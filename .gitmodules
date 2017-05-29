@@ -1,3 +1,6 @@
 [submodule "app/ext/QMetaOrm"]
 	path = app/ext/QMetaOrm
 	url = https://github.com/marcobusemann/QMetaOrm.git
+[submodule "app/ext/QModernGrids"]
+	path = app/ext/QModernGrids
+	url = git@github.com:marcobusemann/QModernGrids.git

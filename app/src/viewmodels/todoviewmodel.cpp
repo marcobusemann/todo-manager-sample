@@ -11,9 +11,9 @@ TodoViewModel::TodoViewModel(const PersonRepository::Ptr &personRepository, QObj
     , m_personRepository(personRepository)
     , m_addWorkerAction(new QAction(this))
     , m_todo(Todo::Ptr(new Todo()))
-    , m_allPersons(QObservableList<Person::Ptr>::empty())
-    , m_availableWorkers(QObservableList<Person::Ptr>::empty())
-    , m_workers(QObservableList<Person::Ptr>::empty())
+    , m_allPersons(QmgObservableList<Person::Ptr>::empty())
+    , m_availableWorkers(QmgObservableList<Person::Ptr>::empty())
+    , m_workers(QmgObservableList<Person::Ptr>::empty())
 {
     connect(m_addWorkerAction, &QAction::triggered, this, &TodoViewModel::addNewWorkerByAction);
 
@@ -32,7 +32,7 @@ void TodoViewModel::retranslateUi()
 void TodoViewModel::initialize()
 {
     auto persons = m_personRepository->getAll();
-    auto observablePersons = QObservableList<Person::Ptr>::fromList(persons);
+    auto observablePersons = QmgObservableList<Person::Ptr>::fromList(persons);
     setAvailableOwners(observablePersons);
     setAvailableWorkers(filterPersons(observablePersons, m_todo->getWorkers()));
 }
@@ -57,17 +57,17 @@ Todo::Ptr TodoViewModel::getModel() const
     return m_todo;
 }
 
-QObservableList<Person::Ptr> &TodoViewModel::getAvailableOwners()
+QmgObservableList<Person::Ptr> &TodoViewModel::getAvailableOwners()
 {
     return m_allPersons;
 }
 
-QObservableList<Person::Ptr> &TodoViewModel::getAvailableWorkers()
+QmgObservableList<Person::Ptr> &TodoViewModel::getAvailableWorkers()
 {
     return m_availableWorkers;
 }
 
-QObservableList<Person::Ptr> &TodoViewModel::getWorkers()
+QmgObservableList<Person::Ptr> &TodoViewModel::getWorkers()
 {
     return m_workers;
 }
@@ -95,10 +95,10 @@ const Person::Ptr &TodoViewModel::getCurrentNewWorker() const
     return m_currentNewWorker;
 }
 
-QObservableList<Person::Ptr> TodoViewModel::filterPersons(const QObservableList<Person::Ptr> &source, const QList<Person::Ptr> &itemsToSubstract)
+QmgObservableList<Person::Ptr> TodoViewModel::filterPersons(const QmgObservableList<Person::Ptr> &source, const QList<Person::Ptr> &itemsToSubstract)
 {
     auto sourceQtList = source.toList();
-    auto result = QObservableList<Person::Ptr>::fromList(source);
+    auto result = QmgObservableList<Person::Ptr>::fromList(source);
 
     for (auto item : itemsToSubstract) {
         auto foundIterator = std::find_if(sourceQtList.begin(), sourceQtList.end(), [item](const Person::Ptr &value) -> bool {
@@ -115,13 +115,13 @@ QObservableList<Person::Ptr> TodoViewModel::filterPersons(const QObservableList<
     return result;
 }
 
-void TodoViewModel::setAvailableWorkers(const QObservableList<Person::Ptr> &workers)
+void TodoViewModel::setAvailableWorkers(const QmgObservableList<Person::Ptr> &workers)
 {
     if (m_availableWorkers == workers) return;
     m_availableWorkers = workers;
 }
 
-void TodoViewModel::setAvailableOwners(const QObservableList<Person::Ptr> &owners)
+void TodoViewModel::setAvailableOwners(const QmgObservableList<Person::Ptr> &owners)
 {
     if (m_allPersons == owners) return;
     m_allPersons = owners;
